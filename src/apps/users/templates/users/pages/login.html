@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JP Acessórios - Login</title>
+    
+    <!-- Google Fonts: Cinzel para a logo e Inter para os textos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center font-['Inter'] bg-[#0A0A0C] text-gray-200 antialiased selection:bg-[#D4AF37] selection:text-black">
+
+    <div class="w-full max-w-md px-6 py-8">
+        {% if user.is_authenticated %}
+            <div class="bg-[#111315] p-8 rounded-xl border border-gray-800 shadow-xl text-center space-y-6">
+                <div class="flex justify-center">
+                    <div class="p-4 bg-[#D4AF37]/10 rounded-full">
+                        <svg class="h-12 w-12 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <h2 class="text-xl font-bold text-gray-200">Você já está conectado!</h2>
+                    <p class="text-sm text-gray-400">Olá, <strong>{{ user.username }}</strong>. Você já possui uma sessão ativa no sistema.</p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <a href="" 
+                        class="w-full flex justify-center py-3 px-4 rounded-lg text-sm font-bold text-black bg-[#D4AF37] hover:bg-[#C5A028] transition-colors">
+                        IR PARA O PAINEL
+                    </a>
+                    
+                    <form method="POST" action="{% url "users:logout" %}">
+                        {% csrf_token %}
+                        <input hidden name="username" value="{{ request.user.username }}">
+                        <button type="submit" class="w-full text-sm text-gray-500 hover:text-red-400 transition-colors">
+                            Sair da conta atual
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        {% else %}
+            {% include "global/partials/messages.html" %}
+            <form method="POST" action="{% url "users:login_create" %}" class="space-y-8 bg-[#111315] p-8 rounded-xl border border-gray-800 shadow-xl">
+                <div>
+                    <h1 class="text-4xl font-bold text-[#D4AF37] mb-2 text-center font-['Cinzel']">JP Acessórios</h1>
+                    <p class="text-center text-gray-400 mb-8">Faça login para acessar o sistema</p>
+                </div>
+                {% csrf_token %}
+                {% include "users/partials/form.html" %}
+            </form>
+
+            <p class="mt-8 text-center text-sm text-gray-500">
+                Ainda não tem uma conta? 
+                <a href="#" class="font-medium text-[#D4AF37] hover:text-[#C5A028] transition-colors">
+                    Contate o administrador para criar uma conta para você.
+                </a>
+            </p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% if messages %}
+    {% for message in messages %}
+        <div class="p-4 mb-4 text-sm rounded-lg border-l-4 flex items-center shadow-sm {{ message.tags}}">
+            <p>As credenciais introduzidas estão incorretas. Por favor, tente novamente.</p>
+        </div>
+    {% endfor %}
+{% endif %}

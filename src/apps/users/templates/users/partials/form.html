@@ -1,0 +1,24 @@
+{% for field in form %}   
+    <div class="space-y-1">
+        <label for="{{ field.id_for_label }}" class="block text-lg text-gray-400">{{ field.label }}</label>
+        <div class="relative">
+            {{ field }}
+        </div>
+
+        {% if field.help_text %}
+            <p class="text-red-100 text-base">{{ field.help_text }}</p>
+        {% endif %}
+    </div>
+
+    {% if form.errors %}
+        <div class="text-red-100 text-base">
+            A erros no formulario, corrijá-os para continuar.
+        </div>
+    {% endif %}
+
+
+{% endfor %}    
+<button type="submit" 
+    class="w-full mt-4 flex justify-center py-3 px-4 rounded-lg text-sm font-bold text-black bg-[#D4AF37] hover:bg-[#C5A028] transition-colors">
+    ENTRAR
+</button>

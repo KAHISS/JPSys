@@ -1,0 +1,1 @@
+from .sales_relatori_views import inventory_list

@@ -1,0 +1,29 @@
+from django.contrib import admin
+from .models import Category, Product
+
+# Register your models here.
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
+    list_per_page = 20
+
+    class Meta:
+        verbose_name = "categoria"
+        verbose_name_plural = "categorias"
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("id", "description", "type", "category",
+                    "stock_quantity", "average_cost", "sale_price")
+    search_fields = ("name", "category__name", "type", "barcode")
+    list_filter = ("category", "type", "created_at", "updated_at")
+    list_display_links = ("id", "description")
+    list_per_page = 20
+
+    class Meta:
+        verbose_name = "Produto"
+        verbose_name_plural = "Produtos"

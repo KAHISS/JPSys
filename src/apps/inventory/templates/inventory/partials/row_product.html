@@ -1,0 +1,13 @@
+<tr class="hover:bg-zinc-800/50 transition-colors">
+    <td class="p-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded bg-zinc-950 border border-zinc-800 flex items-center justify-center text-amber-500"><i class="fas fa-gem"></i></div>
+            <div class="font-medium text-white">{{ product.description }}</div>
+        </div>
+    </td>
+    <td class="p-4 text-sm text-zinc-400">{{ product.type }}</td>
+    <td class="p-4 text-sm text-zinc-400">{{ product.category }}</td>
+    <td class="p-4 text-center font-medium text-white">{{ product.stock_quantity }}</td>
+    <td class="p-4 text-center font-medium text-white">{{ product.average_cost }}</td>
+    <td class="p-4 text-center font-medium text-white">{{ product.sale_price }}</td>
+</tr>

@@ -1,0 +1,69 @@
+<section class="min-h-screen bg-[#0a0a0a] p-8 text-white font-sans animate-fade-in">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+            <h3 class="text-2xl font-bold text-white">{{ title }}</h3>
+        </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-6">
+        {% csrf_token %}
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4">Informações Básicas</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Código de barras</label>
+                    {{ form.barcode }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Descrição</label>
+                    {{ form.description }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Tipo *</label>
+                    {{ form.type }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Categoria</label>
+                    {{ form.category }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Imagem</label>
+                    <div class="flex-grow border-2 border-dashed border-[#333] rounded-lg flex items-center justify-center p-4">
+                        {{ form.image }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4">Preço e Estoque</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Custo Médio</label>
+                    {{ form.average_cost }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Venda</label>
+                    <div class="relative">
+                        {{ form.sale_price }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Quantidade em estoque</label>
+                    {{ form.stock_quantity }}
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold font-bold py-3 rounded-lg transition">
+            Salvar Produto
+        </button>
+    </form>
+</section>
