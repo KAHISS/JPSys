@@ -1,1 +1,1 @@
-from .inventory_models import Category, Product
+from .inventory_models import Category, Product, PromoterStock

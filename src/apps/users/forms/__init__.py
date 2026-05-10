@@ -1,3 +1,3 @@
 # flake8: noqa
-from .register_form import RegisterForm
+from .user_forms import CustomUserCreationForm, CustomUserChangeForm
 from .login_form import LoginForm

@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'global/css/animation_and_scrollbar.css' %}">
     <script src="{% static "global/js/sidebar_control.js" %}" defer></script>
+    {% if page == "inventory" %}
+        <script src="{% static "inventory/js/modal.js" %}" defer></script>
+    {% elif page == "inventory-form" %}
+        <script src="{% static "inventory/js/cd_category.js" %}" defer></script>
+    {% elif page == "users" %}
+        <script src="{% static "users/js/modal.js" %}" defer></script>
+    {% endif %}
 </head>
 <body class="bg-zinc-950 font-sans text-zinc-100">
     <p hidden id="section">{{ section }}</p>
@@ -33,18 +40,14 @@
 
             <!-- Navegação -->
             <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-                <button class="w-full flex items-center space-x-3 p-3 rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-amber-400 transition-colors duration-200 font-medium relatory">
-                    <i class="fas fa-chart-bar w-5 text-center"></i>
-                    <span>Relatórios</span>
-                </button>
-                <a href="{% url "inventory:inventory_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg bg-amber-500 text-black font-semibold transition-colors duration-200 shadow-lg shadow-amber-500/20 stock">
+                <a href="{% url "inventory:inventory_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg {{ inventory_active }} font-semibold transition-colors duration-200  stock">
                     <i class="fas fa-box w-5 text-center"></i>
                     <span>Estoque</span>
                 </a>
-                <button onclick="switchTab('usuarios', this)" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-amber-400 transition-colors duration-200 font-medium users">
-                    <i class="fas fa-users w-5 text-center"></i>
-                    <span>Utilizadores</span>
-                </button>
+                <a href="{% url "users:users_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg {{ user_active }} font-semibold transition-colors duration-200 stock">
+                    <i class="fas fa-user w-5 text-center"></i>
+                    <span>Usuários</span>
+                </a>
             </nav>
 
             <!-- Rodapé Sidebar -->
@@ -89,6 +92,7 @@
 
             <!-- Área de Visualização (Scrollável) -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-zinc-950 p-4 sm:p-6 lg:p-8">
+                {% include 'global/partials/messages.html' %}
                 {% block content %}
                 {% endblock content %}
             </main>

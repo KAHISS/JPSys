@@ -29,6 +29,9 @@ services:
 
         - action: rebuild
           path: ./uv.lock
+    volumes:
+        - static_volume:/app/src/static
+        - media_volume:/app/src/media
 
   ################################################################################
 
@@ -67,3 +70,5 @@ services:
 volumes:
   pg_data:
   pgadmin_data:
+  static_volume:
+  media_volume:

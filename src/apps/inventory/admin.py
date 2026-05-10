@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, PromoterStock
 
 # Register your models here.
 
@@ -27,3 +27,12 @@ class ProductAdmin(admin.ModelAdmin):
     class Meta:
         verbose_name = "Produto"
         verbose_name_plural = "Produtos"
+
+
+@admin.register(PromoterStock)
+class PromoterStockAdmin(admin.ModelAdmin):
+    list_display = ["id", "product"]
+
+    class Meta:
+        verbose_name = "Estoque da promotora"
+        verbose_name_plural = "Estoques das Promotoras"

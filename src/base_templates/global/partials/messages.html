@@ -1,7 +1,16 @@
 {% if messages %}
     {% for message in messages %}
         <div class="p-4 mb-4 text-sm rounded-lg border-l-4 flex items-center shadow-sm {{ message.tags}}">
-            <p>As credenciais introduzidas estão incorretas. Por favor, tente novamente.</p>
+            {% if message.tags == 'success' %}
+                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+            {% elif message.tags == 'error' %}
+                <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3"></i>
+            {% elif message.tags == 'info' %}
+                <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+            {% endif %}
+            {{ message }}
         </div>
     {% endfor %}
 {% endif %}

@@ -1,0 +1,71 @@
+<!-- Modal de Detalhes do Usuário -->
+<div id="user-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-user-title" role="dialog" aria-modal="true">
+    <!-- Fundo escuro transparente -->
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity cursor-pointer" onclick="closeUserModal()"></div>
+
+    <!-- Container do Modal -->
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <!-- Mantive as classes de animação (transform, transition-all) para funcionar com o seu JS -->
+        <div class="relative bg-zinc-900 rounded-xl text-left overflow-hidden shadow-2xl transform transition-all duration-200 sm:my-8 sm:max-w-lg w-full border border-zinc-800 ring-1 ring-amber-500/20">
+            
+            <!-- Cabeçalho do Modal -->
+            <div class="px-6 py-5 border-b border-zinc-800 flex justify-between items-center bg-black/30">
+                <h3 class="text-xl font-bold text-white" id="modal-user-title">Detalhes do Usuário</h3>
+                <button onclick="closeUserModal()" class="text-zinc-500 hover:text-red-500 transition-colors focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Corpo do Modal -->
+            <div class="px-6 py-6">
+                <div class="flex flex-col sm:flex-row gap-6">
+                    
+                    <!-- Ícone do Usuário (Como não tem upload de foto, usamos um ícone fixo elegante) -->
+                    <div class="shrink-0 mx-auto sm:mx-0">
+                        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-xl bg-zinc-950 flex items-center justify-center border-2 border-zinc-800 shadow-md">
+                            <i class="fas fa-user-circle text-zinc-600 text-6xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Informações do Modal -->
+                    <div class="flex-1 space-y-4">
+                        <div>
+                            <span class="block text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Nome de Acesso</span>
+                            <p class="text-zinc-200 bg-zinc-950 px-3 py-1.5 rounded-md border border-zinc-800 font-mono text-sm" id="modal-user-username"></p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="block text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Perfil</span>
+                                <p class="text-amber-500 font-bold" id="modal-user-type"></p>
+                            </div>
+                            <div>
+                                <span class="block text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Telefone</span>
+                                <p class="text-zinc-300" id="modal-user-phone"></p>
+                            </div>
+                        </div>
+
+                        <!-- Parte inferior dividida em Documento e Localização -->
+                        <div class="grid grid-cols-1 gap-3 pt-3 border-t border-zinc-800/50">
+                            <div>
+                                <span class="block text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1">Documento (CPF/CNPJ)</span>
+                                <p class="text-zinc-200 font-medium" id="modal-user-document"></p>
+                            </div>
+                            <div>
+                                <span class="block text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1">Localização</span>
+                                <p class="text-zinc-400 text-sm" id="modal-user-address"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rodapé do Modal -->
+            <div class="bg-black/50 px-6 py-4 flex justify-end gap-3 border-t border-zinc-800">
+                <button onclick="closeUserModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-700 flex items-center gap-2">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,2 +1,2 @@
 # flake8: noqa
-from .register_product import ProductForm
+from .product_form import ProductForm

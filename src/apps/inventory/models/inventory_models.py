@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -42,3 +43,29 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.description or 'Sem descrição'}"
+
+
+class PromoterStock(models.Model):
+    class Meta:
+        verbose_name = "estoque do promotor"
+        verbose_name_plural = "estoques dos promotores"
+        unique_together = ('promoter', 'product')
+
+    promoter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                 related_name='my_stock', limit_choices_to={'type': 'promoter'})
+    product = models.ForeignKey(
+        Product, on_delete=models.PROTECT, limit_choices_to={'type': 'chip'})
+
+    quantity = models.PositiveIntegerField("Quantidade em posse", default=0)
+
+    # NOVOS CAMPOS AQUI:
+    sale_price = models.DecimalField(
+        "Preço de Venda", max_digits=10, decimal_places=2, default=0.00)
+    service_fee = models.DecimalField(
+        "Taxa de Serviço", max_digits=10, decimal_places=2, default=0.00)
+
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+
+    def __str__(self):
+        return f"{self.promoter.username} - {self.product.description} ({self.quantity})"

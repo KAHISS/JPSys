@@ -1,0 +1,37 @@
+<div class="bg-zinc-900 rounded-xl shadow-sm border border-zinc-800 p-5 mb-6">
+    <!-- Ajuste a action para a sua URL de listagem de usuários -->
+    <form method="get" class="flex flex-col lg:flex-row gap-4 items-end" action="{% url 'users:users_list' %}">
+        
+        <!-- Campo Busca (Nome, Email, Documento, etc) -->
+        <div class="flex-1 w-full">
+            <label for="search" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Buscar Usuário</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-zinc-500"></i>
+                </div>
+                <input type="text" name="search" id="search" value="{{ request.GET.search }}" placeholder="Nome, e-mail, documento..." 
+                        class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all placeholder-zinc-600">
+            </div>
+        </div>
+
+        <!-- Select Tipo de Perfil -->
+        <div class="w-full lg:w-48">
+            <label for="type" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Tipo de Perfil</label>
+            <select name="type" id="type" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all">
+                {% for value, label in filter.form.fields.type.choices %}
+                    <option value="{{ value }}" {% if request.GET.type == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="flex gap-3 w-full lg:w-auto">
+            <button type="submit" class="flex-1 lg:flex-none bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-700 flex items-center justify-center gap-2">
+                <i class="fas fa-filter text-amber-500"></i> Filtrar
+            </button>
+            <a href="." class="flex-1 lg:flex-none bg-transparent hover:bg-red-500/10 text-zinc-400 hover:text-red-400 font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-800 hover:border-red-500/30 flex items-center justify-center gap-2">
+                <i class="fas fa-eraser"></i> Limpar
+            </a>
+        </div>
+    </form>
+</div>

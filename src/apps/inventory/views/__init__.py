@@ -1,1 +1,1 @@
-from .inventory_views import inventory_list, register_product_view
+from .inventory_views import *

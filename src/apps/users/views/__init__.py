@@ -1,1 +1,2 @@
-from .auth_views import login_view, login_create, logout_view
+from .auth_views import *
+from .users_view import *

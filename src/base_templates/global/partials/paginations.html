@@ -1,4 +1,4 @@
-{% if items.has_other_pages %}
+{% if objects.has_other_pages %}
     <div class="p-4 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-400 bg-zinc-900">
         <span>
             A mostrar 
@@ -11,8 +11,8 @@
         </span>
         
         <nav class="flex items-center gap-1" aria-label="Paginação">
-            {% if items.has_previous %}
-                <a href="?page={{ items.previous_page_number }}{{ additional_url_query }}" class="px-3 py-1.5 border border-zinc-800 rounded-lg bg-zinc-950 hover:bg-zinc-800 hover:text-amber-500 transition-colors" title="Página Anterior">
+            {% if objects.has_previous %}
+                <a href="?page={{ objects.previous_page_number }}{{ additional_url_query }}" class="px-3 py-1.5 border border-zinc-800 rounded-lg bg-zinc-950 hover:bg-zinc-800 hover:text-amber-500 transition-colors" title="Página Anterior">
                     <i class="fas fa-chevron-left text-xs"></i>
                 </a>
             {% else %}
@@ -45,8 +45,8 @@
                 </a>
             {% endif %}
 
-            {% if items.has_next %}
-                <a href="?page={{ items.next_page_number }}{{ additional_url_query }}" class="px-3 py-1.5 border border-zinc-800 rounded-lg bg-zinc-950 hover:bg-zinc-800 hover:text-amber-500 transition-colors" title="Próxima Página">
+            {% if objects.has_next %}
+                <a href="?page={{ objects.next_page_number }}{{ additional_url_query }}" class="px-3 py-1.5 border border-zinc-800 rounded-lg bg-zinc-950 hover:bg-zinc-800 hover:text-amber-500 transition-colors" title="Próxima Página">
                     <i class="fas fa-chevron-right text-xs"></i>
                 </a>
             {% else %}

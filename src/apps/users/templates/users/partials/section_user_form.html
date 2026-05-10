@@ -1,0 +1,109 @@
+<section class="min-h-screen bg-[#0a0a0a] p-8 text-white font-sans animate-fade-in" id="section">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+            <h3 class="text-2xl font-bold text-white">{{ title }}</h3>
+        </div>
+        <a href="{{ back_url }}" class="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm shadow-zinc-700/20 transition-all duration-200 w-full sm:w-auto justify-center">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    {% if action == "update" %}
+        <form method="POST" class="max-w-4xl mx-auto space-y-6" action="{% url "users:update_user" indentifier %}">
+    {% else %}
+        <form method="POST" class="max-w-4xl mx-auto space-y-6" action="{% url "users:create_user" %}">
+    {% endif %}
+        {% csrf_token %}
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4 text-amber-500">
+                <i class="fas fa-shield-alt mr-2"></i>Acesso e Permissões
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Nome de Usuário *</label>
+                    {{ form.username }}
+                    <span class="text-red-400 text-xs">{{ form.username.errors }}</span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">E-mail *</label>
+                    {{ form.email }}
+                    <span class="text-red-400 text-xs">{{ form.email.errors }}</span>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Tipo de Perfil *</label>
+                    {{ form.type }}
+                    <span class="text-red-400 text-xs">{{ form.type.errors }}</span>
+                    <p class="text-xs text-zinc-500 mt-1">O tipo de perfil define automaticamente as permissões no sistema.</p>
+                </div>
+
+                <!-- ADICIONE ESTE BLOCO AQUI -->
+                {% if not form.instance.pk %}
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-200">Senha *</label>
+                        {{ form.password1 }}
+                        <span class="text-red-400 text-xs">{{ form.password1.errors }}</span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-200">Confirmar Senha *</label>
+                        {{ form.password2 }}
+                        <span class="text-red-400 text-xs">{{ form.password2.errors }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4 text-amber-500">
+                <i class="fas fa-id-card mr-2"></i>Dados Pessoais
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Nome</label>
+                    {{ form.first_name }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Sobrenome</label>
+                    {{ form.last_name }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Documento (CPF/CNPJ)</label>
+                    {{ form.document }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Telefone</label>
+                    {{ form.phone }}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4 text-amber-500">
+                <i class="fas fa-map-marker-alt mr-2"></i>Localização
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Endereço Completo</label>
+                    {{ form.addres }} <!-- Lembre-se de verificar se no seu form está addres ou address -->
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Cidade</label>
+                    {{ form.city }}
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-lg transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+            <i class="fas fa-save"></i> Salvar Usuário
+        </button>
+    </form>
+</section>

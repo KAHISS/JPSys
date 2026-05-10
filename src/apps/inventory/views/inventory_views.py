@@ -1,6 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from django.http import Http404, JsonResponse
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -14,92 +15,137 @@ from apps.inventory.forms import ProductForm
 from apps.inventory.models import Product, Category
 from django.db.models import Q, Sum
 from decimal import Decimal
+from apps.inventory.filters import ProductFilter
 import json
 import os
 
+User = get_user_model()
 
 PER_PAGE = 10
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
-def sale_list(request):
+def inventory_list(request):
     # 1. Verifica permissão
     if not request.user.is_superuser:
         messages.error(
             request, f"Você está logado como {request.user.username}, mas precisa ser um administrador para acessar esta página.")
         return redirect('users:login')
 
-    products = Product.objects.all().order_by('-created_at')
+    promoters = User.objects.filter(type="promoter").order_by("-first_name")
+    queryset = Product.objects.all().order_by('-created_at')
 
-    # 3. Aplica o Filtro (Isso é o mais importante)
-    # = SaleFilter(request.GET, queryset=sales_qs)
+    product_filter = ProductFilter(request.GET, queryset=queryset)
 
-    # Daqui para baixo, usamos 'sale_filter.qs' (que são os dados filtrados)
-    # e não mais 'sales_qs' (que são todos os dados)
+    products, pagination_range = make_pagination(
+        request, product_filter.qs, PER_PAGE)
 
-    # 4. Estatísticas (Agora baseadas no filtro)
-    stats = {
-        'total_products': products.count(),
-        'total_cost': products.aggregate(Sum('average_cost'))['average_cost__sum'] or 0,
-
-        # Aqui mantivemos a lógica de status, mas dentro do universo filtrado
-        'total_orders_pending': products.filter(status='pendente').count(),
-        'total_sales_pending': products.filter(status='pendente').aggregate(Sum('total_price'))['total_price__sum'] or 0,
-
-        'total_orders_completed': products.filter(status='pago').count(),
-        'total_sales_completed': products.filter(status='pago').aggregate(Sum('total_price'))['total_price__sum'] or 0,
-
-        'total_orders_cancelled': products.filter(status='cancelado').count(),
-        'total_sales_cancelled': products.filter(status='cancelado').aggregate(Sum('total_price'))['total_price__sum'] or 0,
-    }
-
-    # 5. Paginação
-    page_obj, pagination_range = make_pagination(
-        request, filtered_qs, PER_PAGE)
-
-    # 6. Preservar filtros na paginação
-    # Copia os parâmetros GET da URL (ex: ?seller=joao&status=pago)
     get_copy = request.GET.copy()
-    # Remove o parâmetro 'page' atual para não duplicar (ex: page=1&page=2)
+
     if 'page' in get_copy:
         del get_copy['page']
-    # Transforma em string para usar no template (ex: "&seller=joao&status=pago")
+
     additional_url_query = '&' + get_copy.urlencode() if get_copy else ''
 
-    return render(request, 'sale/pages/pdv.html', context={
+    return render(request, 'inventory/pages/inventory.html', context={
         'page_title': 'Busca Avançada',
-        'sales': page_obj,
         'pagination_range': pagination_range,
+        'objects': products,
         'additional_url_query': additional_url_query,
-        'stats': stats,
-        'filter': sale_filter,  # AQUI está a correção do erro original
+        'inventory_active': 'bg-amber-500 text-black font-semibold',
+        'filter': product_filter,
+        "title": "Estoque",
+        "page": "inventory",
+        'promoters': promoters
     })
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
-def inventory_list(request):
+def product_form_view(request, pk=None):
     if not request.user.is_superuser:
         raise Http404("Você não tem permissão para acessar esta página.")
-    return render(request, 'inventory/pages/inventory.html',
+
+    if pk:
+        product = get_object_or_404(Product, id=pk)
+        title = f"Editar Produto - {product.description}"
+        path = f"Estoque > Editar Produto > {product.description}"
+        action = 'update'
+        indentifier = product.id
+    else:
+        product = None
+        title = "Registrar Produto"
+        path = "Estoque > Registrar Produto"
+        action = 'create'
+        indentifier = None
+
+    form = ProductForm(request.POST or None,
+                       request.FILES or None, instance=product)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, f"Produto {'atualizado' if pk else 'registrado'} com sucesso!")
+            return redirect('inventory:inventory_list')
+        else:
+            messages.error(
+                request, f"Erro ao {'atualizar' if pk else 'registrar'} produto. Verifique os dados e tente novamente.")
+
+    return render(request, 'inventory/pages/product_form.html',
                   context={
                       "section": "stock",
-                      "title": "Estoque",
-                      "path": "Estoque",
+                      "form": form,
+                      "title": title,
+                      "path": path,
+                      "action": action,
+                      "indentifier": indentifier,
                       "back_url": reverse('inventory:inventory_list'),
+                      "page": "inventory-form"
                   })
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
-def register_product_view(request):
+def delete_product(request, pk):
     if not request.user.is_superuser:
         raise Http404("Você não tem permissão para acessar esta página.")
 
-    form = ProductForm()
-    return render(request, 'inventory/pages/register_product.html',
-                  context={
-                      "section": "stock",
-                      "form": form,
-                      "title": "Registrar Produto",
-                      "path": "Estoque > Registrar Produto",
-                      "back_url": reverse('inventory:inventory_list'),
-                  })
+    product = get_object_or_404(Product, id=pk)
+
+    if request.method == 'POST':
+        product.delete()
+        messages.success(
+            request, f"Produto '{product.description}' excluído com sucesso!")
+        return redirect('inventory:inventory_list')
+
+    return redirect('inventory:inventory_list')
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def category_view(request):
+    if not request.user.is_superuser and not request.POST:
+        raise Http404("Você não tem permissão para acessar esta página.")
+
+    try:
+        data = json.loads(request.body)
+        action = data.get('action')
+
+        if action == 'create':
+            nome = data.get('name')
+            if nome:
+                categoria = Category.objects.create(name=nome)
+                return JsonResponse({'id': categoria.id, 'name': categoria.name}, status=201)
+            return JsonResponse({'error': 'Nome inválido'}, status=400)
+
+        elif action == 'delete':
+            categoria_id = data.get('id')
+            if categoria_id:
+                categoria = get_object_or_404(Category, id=categoria_id)
+                categoria.delete()
+                return JsonResponse({'success': 'Categoria excluída com sucesso!'}, status=200)
+            return JsonResponse({'error': 'ID da categoria não fornecido'}, status=400)
+
+        else:
+            return JsonResponse({'error': 'Ação inválida'}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
