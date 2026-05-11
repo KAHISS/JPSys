@@ -17,3 +17,7 @@ down:
 makemigrations:
     uv run python {{main}} makemigrations
 
+newapp name path:
+    uv run python {{main}} startapp {{name}} {{path}}
+    
+

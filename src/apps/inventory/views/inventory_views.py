@@ -100,24 +100,28 @@ def product_form_view(request, pk=None):
                       "action": action,
                       "indentifier": indentifier,
                       "back_url": reverse('inventory:inventory_list'),
-                      "page": "inventory-form"
+                      "page": "inventory"
                   })
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
 def delete_product(request, pk):
-    if not request.user.is_superuser:
+    if not request.user.is_superuser and not request.POST:
         raise Http404("Você não tem permissão para acessar esta página.")
 
     product = get_object_or_404(Product, id=pk)
 
-    if request.method == 'POST':
-        product.delete()
-        messages.success(
-            request, f"Produto '{product.description}' excluído com sucesso!")
+    if product.promoter_stock.exists():
+        print(product.promoter_stock)
+        messages.error(
+        request, f"Produto '{product.description}' não pode ser excluido, pois existem distribuições vinculadas a ele")
         return redirect('inventory:inventory_list')
-
+    
+    product.delete()
+    messages.success(
+        request, f"Produto '{product.description}' excluído com sucesso!")
     return redirect('inventory:inventory_list')
+
 
 
 @login_required(login_url='users:login', redirect_field_name='next')

@@ -1,0 +1,47 @@
+<div id="return-stock-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity cursor-pointer" onclick="closeReturnModal()"></div>
+
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div class="relative bg-zinc-900 rounded-xl text-left overflow-hidden shadow-2xl transform transition-all duration-200 scale-95 opacity-0 sm:my-8 sm:max-w-md w-full border border-zinc-800 ring-1 ring-amber-500/20">
+            
+            <div class="px-6 py-5 border-b border-zinc-800 flex justify-between items-center bg-black/30">
+                <h3 class="text-xl font-bold text-white">Recolher Produto</h3>
+                <button onclick="closeReturnModal()" class="text-zinc-500 hover:text-red-500 transition-colors focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form method="POST" action="{% url 'inventory:return_promoter_inventory' %}">
+                {% csrf_token %}
+                <input type="hidden" name="stock_id" id="return-stock-id">
+
+                <div class="px-6 py-6 space-y-4">
+                    <div class="bg-black/50 p-4 rounded-lg border border-zinc-800">
+                        <p class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Produto em posse de <span id="return-promoter-name" class="text-amber-500"></span></p>
+                        <h4 class="text-lg font-semibold text-white" id="return-product-name"></h4>
+                        <p class="text-sm text-zinc-400 mt-2">
+                            Disponível para recolher: <span id="return-available-qty" class="text-white font-bold"></span> unidades.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="return-quantity" class="block text-sm font-medium mb-1 text-zinc-300">Quantidade a remover *</label>
+                        <input type="number" name="quantity" id="return-quantity" min="1" required 
+                               class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                               placeholder="Digite a quantidade...">
+                        <p class="text-[10px] text-zinc-500 mt-1 italic">Este valor será devolvido ao Estoque Central.</p>
+                    </div>
+                </div>
+
+                <div class="bg-black/50 px-6 py-4 flex justify-end gap-3 border-t border-zinc-800">
+                    <button type="button" onclick="closeReturnModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-700">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-amber-500/10 flex items-center gap-2">
+                        <i class="fas fa-undo-alt"></i> Confirmar Retorno
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

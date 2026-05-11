@@ -54,7 +54,7 @@ class PromoterStock(models.Model):
     promoter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                  related_name='my_stock', limit_choices_to={'type': 'promoter'})
     product = models.ForeignKey(
-        Product, on_delete=models.PROTECT, limit_choices_to={'type': 'chip'})
+        Product, on_delete=models.PROTECT, limit_choices_to={'type': 'chip'}, related_name="promoter_stock")
 
     quantity = models.PositiveIntegerField("Quantidade em posse", default=0)
 

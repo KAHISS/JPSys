@@ -1,0 +1,7 @@
+{% extends "global/pages/base_administration.html" %}
+{% block title %}Estoque - JP Acessórios{% endblock title %}
+
+{% block content %}
+    {% include "inventory/partials/section_promoter_inventory.html" with title="Estoque Atual" %}
+    {% include "inventory/partials/modal_return_to_inventory.html" %}
+{% endblock content %}

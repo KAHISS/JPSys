@@ -2,7 +2,7 @@
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity cursor-pointer" onclick="closeDispatchModal()"></div>
 
     <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="relative bg-zinc-900 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-200 scale-95 opacity-0 w-full max-w-md border border-zinc-800 ring-1 ring-blue-500/20">
+        <div class="relative bg-zinc-900 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-200 scale-95 opacity-0 w-full max-w-md border border-zinc-800 ring-1 ring-amber-500/20">
             
             <div class="px-6 py-5 border-b border-zinc-800 flex justify-between items-center bg-black/30">
                 <h3 class="text-xl font-bold text-white">Transferir Estoque</h3>
@@ -11,7 +11,7 @@
                 </button>
             </div>
 
-            <form id="form-dispatch-stock">
+            <form id="form-dispatch-stock" action="{% url "inventory:create_promoter_inventory" %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" id="dispatch-product-id">
                 
@@ -25,7 +25,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1 text-gray-200">Selecione o Promotor *</label>
-                            <select name="promoter_id" required class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select name="promoter_id" required class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
                                 <option value="">Selecione...</option>
                                 {% for promoter in promoters %}
                                     <option value="{{ promoter.id }}">{{ promoter.first_name }} {{ promoter.last_name }} ({{ promoter.username }})</option>
@@ -35,24 +35,26 @@
 
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium mb-1 text-gray-200">Quantidade a enviar *</label>
-                            <input type="number" name="quantity" id="dispatch-quantity" min="1" required class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" name="quantity" id="dispatch-quantity" min="1" required class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Venda (R$)*</label>
-                            <input type="number" step="0.01" name="sale_price" required placeholder="0.00" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
+                        <div id="pricing-fields" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-300">
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Venda (R$)*</label>
+                                <input type="number" step="0.01" name="sale_price" required placeholder="0.00" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-200">Taxa de Serviço (%)*</label>
-                            <input type="number" step="0.01" name="sale_price_with_service" required placeholder="0.00" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-200">Taxa de Serviço (R$)*</label>
+                                <input type="number" step="0.01" name="service_fee" required placeholder="0.00" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-black/50 px-6 py-4 flex justify-end gap-3 border-t border-zinc-800">
                     <button type="button" onclick="closeDispatchModal()" class="text-zinc-400 hover:text-white font-medium px-4 py-2 transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-lg transition-colors flex items-center gap-2">
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-600 text-black font-bold px-5 py-2.5 rounded-lg transition-colors flex items-center gap-2">
                         <i class="fas fa-check"></i> Confirmar Envio
                     </button>
                 </div>

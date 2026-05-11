@@ -1,1 +1,2 @@
 from .filter_inventory import ProductFilter
+from .filter_promotor_inventory import PromoterStockFilter

@@ -80,6 +80,10 @@ function closeCategoryModal() {
 
 function openDispatchModal(button) {
     const data = button.dataset;
+    document.getElementById('pricing-fields').classList.remove('hidden');
+    document.querySelector('input[name="sale_price"]').required = true;
+    document.querySelector('input[name="service_fee"]').required = true;
+    document.querySelector('select[name="promoter_id"]').value = '';
     document.getElementById('dispatch-product-id').value = data.id;
     document.getElementById('dispatch-product-name').textContent = data.name;
     document.getElementById('dispatch-current-stock').textContent = data.stock;
@@ -107,4 +111,43 @@ function closeDispatchModal() {
     modalBox.classList.remove('scale-100', 'opacity-100');
     modalBox.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 200);
+}
+
+function openReturnModal(button) {
+    const data = button.dataset;
+    
+    // Preenche os campos do modal com os dados do botão (data-*)
+    document.getElementById('return-stock-id').value = data.id;
+    document.getElementById('return-product-name').textContent = data.product;
+    document.getElementById('return-promoter-name').textContent = data.promoter;
+    document.getElementById('return-available-qty').textContent = data.max;
+    
+    // Define o limite máximo que pode ser digitado no input
+    const qtyInput = document.getElementById('return-quantity');
+    qtyInput.max = data.max;
+    qtyInput.value = ''; // Limpa o campo para o novo preenchimento
+
+    const modal = document.getElementById('return-stock-modal');
+    const modalBox = modal.querySelector('.transform');
+    
+    // Animação de entrada
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalBox.classList.add('scale-100', 'opacity-100');
+        modalBox.classList.remove('scale-95', 'opacity-0');
+        qtyInput.focus();
+    }, 10);
+}
+
+function closeReturnModal() {
+    const modal = document.getElementById('return-stock-modal');
+    const modalBox = modal.querySelector('.transform');
+    
+    // Animação de saída
+    modalBox.classList.remove('scale-100', 'opacity-100');
+    modalBox.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
 }
