@@ -26,6 +26,7 @@ PER_PAGE = 10
 
 @login_required(login_url='users:login', redirect_field_name='next')
 def inventory_list(request):
+    
     # 1. Verifica permissão
     if not request.user.is_superuser:
         messages.error(
