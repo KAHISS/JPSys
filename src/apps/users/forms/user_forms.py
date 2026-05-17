@@ -12,11 +12,12 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name',
-            'type', 'document', 'phone', 'addres', 'city'
+            'type', 'document', 'phone', 'addres', 'city', 'comission'
         )
         widgets = {
             'phone': forms.TextInput(attrs={'placeholder': '(00) 00000-0000'}),
             'document': forms.TextInput(attrs={'placeholder': 'Apenas números'}),
+            'comission': forms.NumberInput(attrs={'placeholder': '0.00'}),
         }
 
     def __init__(self, *args, **kwargs):

@@ -33,8 +33,8 @@ def login_create(request):
             if request.user.is_superuser:
                 return redirect(reverse('inventory:inventory_list'))
             else:
-                # Redirecionar para a página de estoque para usuários comuns
-                return redirect(reverse('inventory:inventory_list'))
+                if request.user.type == "promoter":
+                    return redirect(reverse('sales:promoters_sales_list'))
 
         else:
             messages.error(request, 'Credenciais inválidas!')

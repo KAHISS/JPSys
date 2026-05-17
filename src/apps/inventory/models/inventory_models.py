@@ -52,7 +52,7 @@ class PromoterStock(models.Model):
         unique_together = ('promoter', 'product')
 
     promoter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                 related_name='my_stock', limit_choices_to={'type': 'promoter'})
+                                 related_name='my_stock', limit_choices_to={'type__in': ['admin', 'promoter']})
     product = models.ForeignKey(
         Product, on_delete=models.PROTECT, limit_choices_to={'type': 'chip'}, related_name="promoter_stock")
 

@@ -26,14 +26,15 @@ PER_PAGE = 10
 
 @login_required(login_url='users:login', redirect_field_name='next')
 def inventory_list(request):
-    
+
     # 1. Verifica permissão
     if not request.user.is_superuser:
         messages.error(
             request, f"Você está logado como {request.user.username}, mas precisa ser um administrador para acessar esta página.")
         return redirect('users:login')
 
-    promoters = User.objects.filter(type="promoter").order_by("-first_name")
+    promoters = User.objects.filter(
+        type__in=["admin", "promoter"]).order_by("-first_name")
     queryset = Product.objects.all().order_by('-created_at')
 
     product_filter = ProductFilter(request.GET, queryset=queryset)
@@ -115,14 +116,13 @@ def delete_product(request, pk):
     if product.promoter_stock.exists():
         print(product.promoter_stock)
         messages.error(
-        request, f"Produto '{product.description}' não pode ser excluido, pois existem distribuições vinculadas a ele")
+            request, f"Produto '{product.description}' não pode ser excluido, pois existem distribuições vinculadas a ele")
         return redirect('inventory:inventory_list')
-    
+
     product.delete()
     messages.success(
         request, f"Produto '{product.description}' excluído com sucesso!")
     return redirect('inventory:inventory_list')
-
 
 
 @login_required(login_url='users:login', redirect_field_name='next')

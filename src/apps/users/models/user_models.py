@@ -20,6 +20,8 @@ class User(AbstractUser):
         "Endereço", max_length=255, blank=True, null=True)
     document = models.CharField(
         "Documento", max_length=255, blank=True, null=True)
+    comission = models.DecimalField(
+        "Comissão", max_digits=10, decimal_places=2, default=0.00, blank=True, null=True)
 
     def __str__(self):
         return f"{self.username} ({self.get_type_display()})"

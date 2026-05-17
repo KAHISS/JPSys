@@ -1,12 +1,13 @@
 <tr class="hover:bg-zinc-800/50 transition-colors">
     <td class="p-4">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-xs border border-blue-500/30">
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs border border-amber-500/30">
                 {{ product.promoter.first_name|first|default:product.promoter.username|first|upper }}
             </div>
             <div>
                 <p class="text-sm font-medium text-white">{{ product.promoter.first_name }} {{ product.promoter.last_name }}</p>
-                <p class="text-xs text-zinc-500">{{ product.promoter.username }}</p>
+                <p class="text-xs text-zinc-300">Criado em {{ product.created_at }}</p>
+                <p class="text-xs text-zinc-300">Ultimo envio {{ product.updated_at }}</p>
             </div>
         </div>
     </td>

@@ -151,3 +151,67 @@ function closeReturnModal() {
         modal.classList.add('hidden');
     }, 200);
 }
+
+function openSaleDetailsModal(button) {
+    const data = button.dataset;
+    
+    // Preenche os dados de texto
+    document.getElementById('modal-sale-iccid').textContent = data.iccid;
+    document.getElementById('modal-sale-date').textContent = data.date;
+    document.getElementById('modal-sale-product').textContent = data.product;
+    document.getElementById('modal-sale-promoter').textContent = data.promoter;
+    
+    // Preenche os valores formatados
+    document.getElementById('modal-sale-price').textContent = `R$ ${data.price}`;
+    document.getElementById('modal-sale-fee').textContent = `R$ ${data.fee}`;
+    document.getElementById('modal-sale-total').textContent = `R$ ${data.total}`;
+    
+    // LÓGICA DO CLIENTE E CADASTRO
+    const clientSection = document.getElementById('client-data-section');
+    const noClientMsg = document.getElementById('no-client-data-msg');
+    const serviceBadge = document.getElementById('modal-sale-service-badge');
+
+    if (data.service === 'True') {
+        // Se teve cadastro: Mostra os dados do cliente
+        clientSection.classList.remove('hidden');
+        noClientMsg.classList.add('hidden');
+        
+        document.getElementById('modal-sale-customer-name').textContent = data.customer || 'Nome não preenchido';
+        document.getElementById('modal-sale-customer-cpf').textContent = data.cpf || '-';
+        
+        // Estilo da badge
+        serviceBadge.textContent = 'SIM';
+        serviceBadge.className = 'ml-1 text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded';
+    } else {
+        // Se NÃO teve cadastro: Esconde a div inteira do cliente
+        clientSection.classList.add('hidden');
+        noClientMsg.classList.remove('hidden');
+        
+        // Estilo da badge
+        serviceBadge.textContent = 'NÃO';
+        serviceBadge.className = 'ml-1 text-[9px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded';
+    }
+
+    // Animação de entrada
+    const modal = document.getElementById('sale-details-modal');
+    const modalBox = modal.querySelector('.transform');
+    
+    modalBox.classList.add('scale-95', 'opacity-0');
+    modalBox.classList.remove('scale-100', 'opacity-100');
+    modal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        modalBox.classList.add('scale-100', 'opacity-100');
+        modalBox.classList.remove('scale-95', 'opacity-0');
+    }, 10);
+}
+
+function closeSaleDetailsModal() {
+    const modal = document.getElementById('sale-details-modal');
+    const modalBox = modal.querySelector('.transform');
+    
+    modalBox.classList.remove('scale-100', 'opacity-100');
+    modalBox.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => modal.classList.add('hidden'), 200);
+}

@@ -22,16 +22,11 @@ document.querySelector('select[name="promoter_id"]').addEventListener('change', 
 
         if (data.exists) {
             // Se JÁ TEM: Esconde a div, tira o 'required' e limpa os valores
-            pricingFields.classList.add('hidden');
-            salePriceInput.required = false;
-            serviceFeeInput.required = false;
+            salePriceInput.value = data.sale_price;
+            serviceFeeInput.value = data.service_fee;
+        } else {
             salePriceInput.value = '';
             serviceFeeInput.value = '';
-        } else {
-            // Se NÃO TEM: Mostra a div e volta a exigir o preenchimento
-            pricingFields.classList.remove('hidden');
-            salePriceInput.required = true;
-            serviceFeeInput.required = true;
         }
     } catch (error) {
         console.error("Erro ao verificar estoque:", error);

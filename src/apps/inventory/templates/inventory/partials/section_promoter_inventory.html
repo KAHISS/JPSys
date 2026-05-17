@@ -8,6 +8,51 @@
             <i class="fas fa-truck"></i> Distribuir Novo Estoque
         </a>
     </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {% if user.is_superuser %}
+            <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+                <div>
+                    <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Promotores Ativos</p>
+                    <h4 class="text-2xl font-bold text-white">{{ total_promoters_with_stock|default:"0" }}</h4>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                    <i class="fas fa-users text-xl"></i>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Total de Chips em Mãos</p>
+                <h4 class="text-2xl font-bold text-amber-500">{{ total_chips_in_hand|default:"0" }}</h4>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+                <i class="fas fa-sim-card text-xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Valor em Carga (Venda)</p>
+                <h4 class="text-2xl font-bold text-white">R$ {{ total_stock_value|floatformat:2|default:"0,00" }}</h4>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                <i class="fas fa-money-bill-wave text-xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Alertas de Estoque Baixo</p>
+                <h4 class="text-2xl font-bold {% if total_low_stock_alerts > 0 %}text-red-500{% else %}text-white{% endif %}">
+                    {{ total_low_stock_alerts|default:"0" }}
+                </h4>
+            </div>
+            <div class="w-12 h-12 rounded-full {% if total_low_stock_alerts > 0 %}bg-red-500/10 text-red-500 border border-red-500/20{% else %}bg-zinc-800 text-zinc-500 border border-zinc-700/50{% endif %} flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-xl"></i>
+            </div>
+        </div>
+    </div>
 
     {% include 'inventory/partials/filter_promoter_inventory.html' %}
 

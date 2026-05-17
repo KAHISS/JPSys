@@ -1,0 +1,100 @@
+<section class="min-h-screen bg-[#0a0a0a] p-8 text-white font-sans animate-fade-in">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div>
+            <h3 class="text-2xl font-bold text-white">{{ title|default:"Registrar Venda de Chip" }}</h3>
+        </div>
+        <a href="{% url 'sales:promoters_sales_list' %}" class="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm shadow-zinc-700/20 transition-all duration-200 w-full sm:w-auto justify-center">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    {% if action == 'update' %}
+        <form method="POST" class="max-w-4xl mx-auto space-y-6" action="{% url 'sales:create_promoter_sale' identifier %}">
+    {% else %}
+        <form method="POST" class="max-w-4xl mx-auto space-y-6" action="{% url 'sales:create_promoter_sale' %}">   
+    {% endif %}
+        {% csrf_token %}
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4 text-emerald-500 border-b border-zinc-800 pb-2">
+                <i class="fas fa-sim-card mr-2"></i>Informações do Produto
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Chip (Produto) *</label>
+                    <select name="id_product" id="id_product" class='w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-zinc-600'>
+                        {% for product in products %}
+                            <option value="{{ product.id }}">{{ product }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">ICCID do Chip *</label>
+                    {{ form.iccid }}
+                    <p class="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">Número de série com 19 ou 20 dígitos impresso no cartão.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="client-data-section" class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222] transition-all duration-300 hidden">
+            <h2 class="text-lg font-semibold mb-4 text-emerald-500 border-b border-zinc-800 pb-2">
+                <i class="fas fa-user mr-2"></i>Dados do Cliente
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Nome Completo</label>
+                    {{ form.customer_name }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">CPF</label>
+                    {{ form.customer_cpf }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Data de Nascimento</label>
+                    {{ form.customer_birth_date }}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#1a1a1a] p-6 rounded-xl border border-[#222]">
+            <h2 class="text-lg font-semibold mb-4 text-emerald-500 border-b border-zinc-800 pb-2">
+                <i class="fas fa-dollar-sign mr-2"></i>Serviço e Valores
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="md:col-span-2 flex items-center gap-3 bg-black/40 p-4 rounded-lg border border-zinc-800">
+                    {{ form.service }}
+                    <label for="{{ form.service.id_for_label }}" class="text-sm font-medium text-gray-200 cursor-pointer select-none">
+                        O cliente solicitou o cadastro do chip? <span class="text-zinc-500 font-normal">(Isso habilitará a cobrança da taxa de serviço)</span>
+                    </label>
+                </div>
+
+                <div class="bg-black/20 p-3 rounded-lg border border-zinc-800/50">
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-zinc-500">Valor Pago pelo Chip</label>
+                    <p id="display-price" class="text-xl font-bold text-zinc-300">R$ 0,00</p>
+                </div>
+
+                <div class="bg-black/20 p-3 rounded-lg border border-zinc-800/50">
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-zinc-500">Taxa de Serviço Cobrada</label>
+                    <p id="display-fee" class="text-xl font-bold text-zinc-300">R$ 0,00</p>
+                </div>
+
+                <div class="md:col-span-2 bg-emerald-500/10 p-4 rounded-lg border border-emerald-500/30 flex justify-between items-center mt-2 transition-all">
+                    <span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">Valor Total da Venda</span>
+                    <span id="display-total" class="text-3xl font-black text-emerald-400">R$ 0,00</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+            <i class="fas fa-check-circle text-lg"></i>
+            Salvar Venda
+        </button>
+    </form>
+</section>
