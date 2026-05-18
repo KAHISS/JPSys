@@ -1,51 +1,77 @@
-<div class="bg-zinc-900 rounded-xl shadow-sm border border-zinc-800 p-5 mb-6">
+<div class="bg-zinc-900 rounded-xl shadow-sm border border-zinc-800 p-6 mb-6">
     <!-- Ajuste o action para a rota da sua listagem de vendas de chips -->
-    <form method="get" class="flex flex-col lg:flex-row gap-4 items-end" action="{% url 'sales:promoters_sales_list' %}">
+    <form method="get" class="space-y-4" action="{% url 'sales:promoters_sales_list' %}">
         
-        <!-- Campo Busca (ICCID, Cliente ou CPF) -->
-        <div class="flex-1 w-full">
-            <label for="search" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Buscar Venda</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-zinc-500"></i>
+        <!-- Linha Superior: Campos de Busca e Seleção -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            
+            <!-- Campo Busca (ICCID, Cliente ou CPF) -->
+            <div class="md:col-span-6 lg:col-span-6 w-full">
+                <label for="search" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Buscar Venda</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-zinc-500"></i>
+                    </div>
+                    <input type="text" name="search" id="search" value="{{ request.GET.search|default:'' }}" placeholder="ICCID, nome do cliente ou CPF..." 
+                            class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-zinc-600">
                 </div>
-                <input type="text" name="search" id="search" value="{{ request.GET.search|default:'' }}" placeholder="ICCID, nome do cliente ou CPF..." 
-                        class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-zinc-600">
             </div>
+
+            <!-- Select Cadastro/Serviço -->
+            <div class="md:col-span-3 lg:col-span-3 w-full">
+                <label for="service" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Teve Cadastro?</label>
+                <select name="service" id="service" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                    {% for value, label in filter.form.fields.service.choices %}
+                        <option value="{{ value }}" {% if request.GET.service == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Select Promotor (Aparece apenas se for superuser) -->
+            {% if user.is_superuser %}
+                <div class="md:col-span-3 lg:col-span-3 w-full">
+                    <label for="promoter" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Promotor</label>
+                    <select name="promoter" id="promoter" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                        {% for value, label in filter.form.fields.promoter.choices %}
+                            <!-- Corrigido o bug: alterado de request.GET.service para request.GET.promoter -->
+                            <option value="{{ value }}" {% if request.GET.promoter == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
         </div>
 
-        <!-- Select Cadastro/Serviço -->
-        <div class="w-full lg:w-48">
-            <label for="service" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Teve Cadastro?</label>
-            <select name="service" id="service" class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
-                {% for value, label in filter.form.fields.service.choices %}
-                    <option value="{{ value }}" {% if request.GET.service == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <hr class="border-zinc-800/60 my-2">
 
-        <!-- Input Data Inicial -->
-        <div class="w-full lg:w-44">
-            <label for="start_date" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">A partir de</label>
-            <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date|default:'' }}"
-                   class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all scheme-dark">
-        </div>
+        <!-- Linha Inferior: Filtro de Datas e Botões de Ação -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            
+            <!-- Bloco de Datas Lado a Lado -->
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <!-- Input Data Inicial -->
+                <div class="w-full sm:w-44">
+                    <label for="start_date" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">A partir de</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date|default:'' }}"
+                        class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all scheme-dark">
+                </div>
+                <!-- Input Data Final -->
+                <div class="w-full sm:w-44">
+                    <label for="end_date" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Até</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date|default:'' }}"
+                        class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all scheme-dark">
+                </div>
+            </div>
 
-        <!-- Input Data Final -->
-        <div class="w-full lg:w-44">
-            <label for="end_date" class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Até</label>
-            <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date|default:'' }}"
-                   class="w-full bg-black/50 border border-zinc-800 text-zinc-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all scheme-dark">
-        </div>
+            <!-- Botões de Ação -->
+            <div class="flex gap-3 w-full sm:w-auto justify-end">
+                <button type="submit" class="flex-1 lg:flex-none bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-700 flex items-center justify-center gap-2">
+                    <i class="fas fa-filter text-emerald-600"></i> Filtrar
+                </button>
+                <a href="." class="w-full sm:w-auto bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-800 flex items-center justify-center gap-2">
+                    <i class="fas fa-eraser"></i> Limpar
+                </a>
+            </div>
 
-        <!-- Botões de Ação -->
-        <div class="flex gap-3 w-full lg:w-auto">
-            <button type="submit" class="flex-1 lg:flex-none bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-700 flex items-center justify-center gap-2">
-                <i class="fas fa-filter text-emerald-500"></i> Filtrar
-            </button>
-            <a href="." class="flex-1 lg:flex-none bg-transparent hover:bg-red-500/10 text-zinc-400 hover:text-red-400 font-medium px-5 py-2.5 rounded-lg transition-colors border border-zinc-800 hover:border-red-500/30 flex items-center justify-center gap-2">
-                <i class="fas fa-eraser"></i> Limpar
-            </a>
         </div>
     </form>
 </div>

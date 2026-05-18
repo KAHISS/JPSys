@@ -7,6 +7,7 @@ function openUserModal(button) {
     
     document.getElementById('modal-user-username').textContent = data.username;
     document.getElementById('modal-user-type').textContent = data.type;
+    document.getElementById('modal-user-comission').textContent = data.comission;
     document.getElementById('modal-user-phone').textContent = data.phone;
     document.getElementById('modal-user-document').textContent = data.document;
     

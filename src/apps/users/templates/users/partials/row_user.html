@@ -45,6 +45,7 @@
             data-username="{{ user.username }}"
             data-fullname="{{ user.first_name }} {{ user.last_name }}"
             data-type="{{ user.get_type_display }}"
+            data-comission="{{ user.comission|default:"-" }}"
             data-phone="{{ user.phone|default:'-' }}"
             data-document="{{ user.document|default:'-' }}"
             data-address="{{ user.address|default:'-' }}"
@@ -55,6 +56,9 @@
         </button>        
         <a href="{% url 'users:update_user' user.id %}" class="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all" title="Editar Usuário">
             <i class="fas fa-edit text-lg"></i>
+        </a>    
+        <a href="{% url 'users:reset_password' user.id %}" class="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all" title="Editar Usuário">
+            <i class="fas fa-lock text-lg"></i>
         </a>        
         <form action="{% url 'users:delete_user' user.id %}" method="POST" class="inline-block" 
           onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja excluir o usuário {{ user.username }}? Essa ação não pode ser desfeita.');">

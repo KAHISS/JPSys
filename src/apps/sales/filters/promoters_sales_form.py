@@ -1,7 +1,9 @@
 import django_filters
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 from apps.sales.models import ChipSale
 
+User = get_user_model()
 
 class ChipSaleFilter(django_filters.FilterSet):
     # Busca customizada por ICCID, Nome do Cliente ou CPF
@@ -18,6 +20,11 @@ class ChipSaleFilter(django_filters.FilterSet):
             ('False', 'Não')
         ],
         method='filter_service'
+    )
+
+    promoter = django_filters.ModelChoiceFilter(
+        queryset=User.objects.filter(type__in=['admin', 'promoter'], is_active=True),
+        empty_label="Todos os Promotores",
     )
 
     def filter_service(self, queryset, name, value):
@@ -41,7 +48,7 @@ class ChipSaleFilter(django_filters.FilterSet):
 
     class Meta:
         model = ChipSale
-        fields = ['service']
+        fields = ['service', 'promoter']
 
     def custom_search(self, queryset, name, value):
         # Remove pontos e traços se o usuário digitar o CPF com máscara

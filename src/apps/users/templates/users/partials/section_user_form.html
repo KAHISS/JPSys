@@ -51,11 +51,13 @@
                     <div>
                         <label class="block text-sm font-medium mb-1 text-gray-200">Senha *</label>
                         {{ form.password1 }}
+                        <span class="text-zinc-500 text-xs">{{ form.password1.help_text }}</span>
                         <span class="text-red-400 text-xs">{{ form.password1.errors }}</span>
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1 text-gray-200">Confirmar Senha *</label>
                         {{ form.password2 }}
+                        <span class="text-zinc-500 text-xs">{{ form.password2.help_text }}</span>
                         <span class="text-red-400 text-xs">{{ form.password2.errors }}</span>
                     </div>
                 {% endif %}

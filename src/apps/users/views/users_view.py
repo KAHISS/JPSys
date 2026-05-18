@@ -4,7 +4,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from apps.users.forms import CustomUserCreationForm, CustomUserChangeForm
+from apps.users.forms import CustomUserCreationForm, CustomUserChangeForm, AdminSetPasswordForm
 from utils.pagination import make_pagination
 from apps.users.filters import UserFilter
 
@@ -73,7 +73,6 @@ def user_form_view(request, pk=None):
         path = f"Usuários > Editar > {user_instance.username}"
         action = "update"
         indentifier = user_instance.id
-        print(indentifier)
 
         form = CustomUserChangeForm(
             request.POST or None, instance=user_instance)
@@ -90,7 +89,6 @@ def user_form_view(request, pk=None):
     if request.method == 'POST' and not 'delete' in request.POST:
         if form.is_valid():
             user = form.save(commit=False)
-
             if user.type == User.Type.ADMIN:
                 user.is_staff = True
                 user.is_superuser = True
@@ -121,3 +119,36 @@ def user_form_view(request, pk=None):
         'user_active': 'bg-amber-500 text-black font-semibold',
         "page": "users-form"
     })
+
+
+@login_required(login_url='users:login', redirect_field_name="next")
+def admin_reset_password_view(request, pk):
+    if not request.user.is_superuser:
+        messages.error(request, "Acesso negado. Apenas administradores podem redefinir senhas.")
+        return redirect('inventory:promoter_inventory_list')
+
+    # Busca o usuário que vai ter a senha alterada (ex: o Promotor)
+    target_user = get_object_or_404(User, id=pk)
+
+    if request.method == 'POST':
+        # O SetPasswordForm pede o usuário alvo e os dados digitados
+        form = AdminSetPasswordForm(target_user, request.POST)
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'A senha de {target_user.first_name} foi redefinida com sucesso!')
+            # Redireciona de volta para a lista de usuários/promotores
+            return redirect('users:users_list') 
+        else:
+            messages.error(request, 'Erro ao redefinir a senha. Verifique os dados.')
+    else:
+        form = AdminSetPasswordForm(target_user)
+
+    context = {
+        'form': form,
+        'target_user': target_user,
+        'title': f'Redefinir Senha: {target_user.first_name}',
+        'promoter_inventory_active': 'bg-amber-500 text-black font-semibold',
+    }
+    
+    return render(request, 'users/pages/alter_password.html', context)

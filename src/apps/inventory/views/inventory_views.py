@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from core.settings import STATIC_URL
 from django.middleware.csrf import get_token
 from utils.pagination import make_pagination
+from utils.reporting_metrics import get_inventory_metrics
 from apps.inventory.forms import ProductForm
 from apps.inventory.models import Product, Category
 from django.db.models import Q, Sum
@@ -41,6 +42,8 @@ def inventory_list(request):
 
     products, pagination_range = make_pagination(
         request, product_filter.qs, PER_PAGE)
+    
+    metrics = get_inventory_metrics(product_filter.qs)
 
     get_copy = request.GET.copy()
 
@@ -58,7 +61,13 @@ def inventory_list(request):
         'filter': product_filter,
         "title": "Estoque",
         "page": "inventory",
-        'promoters': promoters
+        'promoters': promoters,
+        'total_products_count': metrics['total_products'] or 0,
+        'total_units_in_stock': metrics['total_units'] or 0,
+        'total_cost_value': metrics['total_cost'] or 0.00,
+        'total_sales_potential': metrics['potential_revenue'] or 0.00,
+        'profit_margin_percent': metrics['margin'] or 0.00,
+        'total_profit': metrics['profit'],
     })
 
 

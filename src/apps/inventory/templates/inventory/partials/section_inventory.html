@@ -8,6 +8,59 @@
         </a>
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Total de Itens</p>
+                <h4 class="text-2xl font-bold text-white">{{ total_products_count|default:"0" }}</h4>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                <i class="fas fa-boxes text-xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Total de Unidades</p>
+                <h4 class="text-2xl font-bold text-amber-500">{{ total_units_in_stock|default:"0" }}</h4>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+                <i class="fas fa-cubes text-xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Custo Total em Estoque</p>
+                <h4 class="text-2xl font-bold text-white">R$ {{ total_cost_value|floatformat:2|default:"0,00" }}</h4>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20">
+                <i class="fas fa-wallet text-xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+                <div>
+                    <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Faturamento Potencial</p>
+                    <h4 class="text-2xl font-bold text-emerald-400">R$ {{ total_sales_potential|floatformat:2|default:"0,00" }}</h4>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                    <i class="fas fa-hand-holding-usd text-xl"></i>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between gap-2 border-t border-zinc-800/60 pt-2.5 mt-1 text-xs">
+                <span class="text-zinc-500">
+                    Lucro: <strong class="text-zinc-300">R$ {{ total_profit|floatformat:2 }}</strong>
+                </span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold">
+                    {{ profit_margin_percent|floatformat:1 }}% margem
+                </span>
+            </div>
+        </div>
+    </div>
+
     {% include 'inventory/partials/filter.html' %}
 
     <!-- Tabela de Estoque -->

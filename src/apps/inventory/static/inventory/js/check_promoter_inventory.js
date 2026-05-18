@@ -25,8 +25,7 @@ document.querySelector('select[name="promoter_id"]').addEventListener('change', 
             salePriceInput.value = data.sale_price;
             serviceFeeInput.value = data.service_fee;
         } else {
-            salePriceInput.value = '';
-            serviceFeeInput.value = '';
+            salePriceInput.value = data.sale_price
         }
     } catch (error) {
         console.error("Erro ao verificar estoque:", error);

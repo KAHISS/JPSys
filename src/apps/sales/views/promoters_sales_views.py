@@ -151,6 +151,9 @@ def delete_promoter_sale(request, pk):
 
 @login_required(login_url='users:login', redirect_field_name='next')
 def get_stock_price(request):
+    if not request.user.is_superuser:
+        raise Http404("Você não tem acesso a essa página")
+    
     stock_id = request.GET.get('stock_id')
 
     if stock_id:

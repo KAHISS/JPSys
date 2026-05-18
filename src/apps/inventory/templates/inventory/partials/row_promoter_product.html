@@ -37,17 +37,19 @@
         <span class="text-sm text-emerald-400 font-medium">+ R$ {{ product.service_fee|floatformat:2 }}</span>
     </td>
 
-    <td class="p-4">
-        <div class="flex justify-center items-center gap-2">
-            <button onclick="openReturnModal(this)" 
-                    data-id="{{ product.id }}" 
-                    data-product="{{ product.product.description }}" 
-                    data-promoter="{{ product.promoter.username }}" 
-                    data-max="{{ product.quantity }}"
-                    class="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all"
-                    title="Recolher Estoque">
-                <i class="fas fa-undo-alt text-lg"></i>
-            </button>
-        </div>
-    </td>
+    {% if user.is_superuser %}
+        <td class="p-4">
+            <div class="flex justify-center items-center gap-2">
+                <button onclick="openReturnModal(this)" 
+                        data-id="{{ product.id }}" 
+                        data-product="{{ product.product.description }}" 
+                        data-promoter="{{ product.promoter.username }}" 
+                        data-max="{{ product.quantity }}"
+                        class="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all"
+                        title="Recolher Estoque">
+                    <i class="fas fa-undo-alt text-lg"></i>
+                </button>
+            </div>
+        </td>
+    {% endif %}
 </tr>
