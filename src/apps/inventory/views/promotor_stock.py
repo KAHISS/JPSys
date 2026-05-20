@@ -54,6 +54,7 @@ def promoter_inventory_list(request):
         "page": "inventory",
         'total_promoters_with_stock': metrics['unique_promoters'] or 0,
         'total_chips_in_hand': metrics['total_units'] or 0,
+        'total_products': metrics['total_products'] or 0,
         'total_potential_revenue': metrics['potential_revenue'] or 0.00,
         'total_potential_revenue_with_service': metrics['potential_revenue_with_service'] or 0,
     })
@@ -130,7 +131,7 @@ def check_promoter_stock(request):
         # Retorna True se o registro existir, False se não existir
         product = PromoterStock.objects.filter(
             product_id=product_id, promoter_id=promoter_id)
-        
+
         if product:
             return JsonResponse({'exists': True, 'sale_price': product[0].sale_price, 'service_fee': product[0].service_fee})
         else:

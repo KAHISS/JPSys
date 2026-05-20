@@ -215,3 +215,63 @@ function closeSaleDetailsModal() {
     
     setTimeout(() => modal.classList.add('hidden'), 200);
 }
+
+function openOrderModal(button) {
+    // Pega os dados do botão que foi clicado (usando dataset)
+    const id = button.dataset.id;
+    const date = button.dataset.date;
+    const client = button.dataset.client;
+    const status = button.dataset.status;
+    const quantity = button.dataset.quantity;
+    const total = button.dataset.total;
+    let obs = button.dataset.obs;
+
+    // Se não tiver observação, coloca um texto amigável
+    if (!obs || obs.trim() === '' || obs === 'None') {
+        obs = "Nenhuma observação registrada neste pedido.";
+    }
+
+    // Preenche os campos do HTML
+    document.getElementById('modal-order-id').innerText = id;
+    document.getElementById('modal-order-date').innerText = date;
+    document.getElementById('modal-order-client').innerText = client;
+    document.getElementById('modal-order-status').innerText = status;
+    document.getElementById('modal-order-quantity').innerText = quantity + " un.";
+    document.getElementById('modal-order-total').innerText = "R$ " + total;
+    document.getElementById('modal-order-obs').innerText = obs;
+
+    // Mostra o modal tirando a classe 'hidden'
+    document.getElementById('order-details-modal').classList.remove('hidden');
+}
+
+function closeOrderModal() {
+    // Esconde o modal adicionando a classe 'hidden'
+    document.getElementById('order-details-modal').classList.add('hidden');
+}
+
+function openEditItemModal(button) {
+    // Pega os dados do botão
+    const itemId = button.dataset.id;
+    const productName = button.dataset.product;
+    const currentQty = button.dataset.quantity;
+    const url = button.dataset.url;
+    
+    // Define a URL da action do formulário (substitua 'sales:update_order_item' pelo nome real da sua rota)
+    const form = document.getElementById('edit-item-form');
+    // Usamos um truque substituindo um placeholder "0" pelo ID real do item
+    form.action = url;
+
+    // Preenche os textos e o input
+    document.getElementById('modal-item-product').innerText = productName;
+    document.getElementById('modal-item-quantity').value = currentQty;
+
+    // Mostra o modal
+    document.getElementById('edit-item-modal').classList.remove('hidden');
+    
+    // Foca no input automaticamente para o usuário não precisar clicar de novo
+    setTimeout(() => document.getElementById('modal-item-quantity').focus(), 100);
+}
+
+function closeEditItemModal() {
+    document.getElementById('edit-item-modal').classList.add('hidden');
+}

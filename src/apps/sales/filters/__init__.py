@@ -1,1 +1,2 @@
-from .promoters_sales_form import ChipSaleFilter
+from .promoters_sales_filter import ChipSaleFilter
+from .oders_sales_filter import OrderSaleFilter

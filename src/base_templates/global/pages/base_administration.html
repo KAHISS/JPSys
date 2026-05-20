@@ -66,8 +66,8 @@
                         <span>Vendas de chip</span>
                     </a>      
                 {% endif %}
-                <a href="{% url "sales:orders_sales_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg {{ promoters_sales_active }} font-semibold transition-colors duration-200 stock">
-                    <i class="fas fa-sim-card w-5 text-center"></i>
+                <a href="{% url "sales:orders_sales_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg {{ orders_sales_active }} font-semibold transition-colors duration-200 stock">
+                    <i class="fas fa-clipboard-list w-5 text-center"></i>
                     <span>Pedidos de vendas</span>
                 </a>    
             </nav>

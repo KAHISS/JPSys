@@ -26,7 +26,7 @@
         <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Total de Itens</p>
-                <h4 class="text-2xl font-bold text-white">{{ total_products_count|default:"0" }}</h4>
+                <h4 class="text-2xl font-bold text-white">{{ total_products|default:"0" }}</h4>
             </div>
             <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
                 <i class="fas fa-boxes text-xl"></i>
@@ -36,7 +36,7 @@
         <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5 flex items-center justify-between shadow-sm">
             <div>
                 <p class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">Total de Unidades em Mãos</p>
-                <h4 class="text-2xl font-bold text-amber-500">{{ total_units_in_stock|default:"0" }}</h4>
+                <h4 class="text-2xl font-bold text-amber-500">{{ total_chips_in_hand|default:"0" }}</h4>
             </div>
             <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
                 <i class="fas fa-cubes text-xl"></i>

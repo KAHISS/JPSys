@@ -32,15 +32,17 @@ def login_create(request):
             login(request, authenticate_user)
             if request.user.is_superuser:
                 return redirect(reverse('inventory:inventory_list'))
-            else:
-                if request.user.type == "promoter":
-                    return redirect(reverse('sales:promoters_sales_list'))
+            elif request.user.type == "promoter":
+                return redirect(reverse('sales:promoters_sales_list'))
+            elif request.user.type == "client":
+                return redirect(reverse('sales:orders_sales_list'))
 
         else:
             messages.error(request, 'Credenciais inválidas!')
             return redirect(reverse('users:login'))
     else:
         messages.error(request, 'Erro ao validar formulário!')
+        return redirect(reverse('users:login'))
 
 
 @login_required(login_url='users:login', redirect_field_name='next')

@@ -1,0 +1,203 @@
+<section class="min-h-screen bg-[#0a0a0a] p-8 text-white font-sans animate-fade-in">
+    
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-zinc-800 pb-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <h3 class="text-2xl font-bold text-white">Pedido #{{ order.id }}</h3>
+                
+                {% if order.status == 'pending' %}
+                    <span class="px-2.5 py-1 bg-amber-500/10 text-amber-500 text-xs font-bold rounded-md border border-amber-500/20">Pendente</span>
+                {% elif order.status == 'paid' %}
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-bold rounded-md border border-emerald-500/20">Pago</span>
+                {% else %}
+                    <span class="px-2.5 py-1 bg-red-500/10 text-red-500 text-xs font-bold rounded-md border border-red-500/20">Cancelado</span>
+                {% endif %}
+            </div>
+            <p class="text-zinc-400 text-sm mt-1">Criado em {{ order.created_at|date:"d/m/Y às H:i" }}</p>
+        </div>
+        
+        <a href="{% url 'sales:orders_sales_list' %}" class="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-all duration-200">
+            <i class="fas fa-arrow-left"></i> Voltar para a Lista
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-5 space-y-6">
+            
+            <div class="bg-[#1a1a1a] p-6 rounded-xl border border-zinc-800 space-y-3">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 flex items-center gap-2">
+                    <i class="fas fa-map-marker-alt text-blue-500"></i> Dados de Entrega / Cliente
+                </h2>
+                <div class="space-y-2 text-sm text-zinc-300">
+                    <p><span class="text-zinc-500 font-medium">Endereço:</span> {{ order.client.addres|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Cidade:</span> {{ order.client.city|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Telefone:</span> {{ order.client.phone|default:"Não informado" }}</p>
+                </div>
+            </div>
+            
+            {% if request.user.is_superuser and order.status != 'canceled' %}
+                
+                <form method="POST" action="" class="bg-[#1a1a1a] p-6 rounded-xl border border-zinc-800 space-y-4">
+                    {% csrf_token %}
+                    <h2 class="text-lg font-semibold text-emerald-500 border-b border-zinc-800 pb-2 mb-2">
+                        <i class="fas fa-edit mr-2"></i>Gerenciar Pedido
+                    </h2>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Alterar Cliente</label>
+                        {{ form.client }}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Status do Pedido</label>
+                            {{ form.status }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Método de Pagamento</label>
+                            {{ form.payment_method }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Observações Internas</label>
+                        {{ form.observations }}
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Salvar Alterações
+                    </button>
+                </form>
+
+            {% else %}
+                
+                <div class="bg-[#1a1a1a] p-6 rounded-xl border border-zinc-800 space-y-4">
+                    <h2 class="text-lg font-semibold text-zinc-400 border-b border-zinc-800 pb-2">
+                        <i class="fas fa-info-circle mr-2"></i>Informações do Pedido
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Status</span>
+                            <p class="text-sm font-medium text-zinc-300 bg-black/20 border border-zinc-800 px-3 py-2.5 rounded-lg">
+                                {{ order.get_status_display }}
+                            </p>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Pagamento</span>
+                            <p class="text-sm font-medium text-zinc-300 bg-black/20 border border-zinc-800 px-3 py-2.5 rounded-lg">
+                                {{ order.get_payment_method_display }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Observações</span>
+                        <div class="bg-black/20 border border-zinc-800 px-3 py-3 rounded-lg text-sm text-zinc-400 italic">
+                            {{ order.observations|default:"Nenhuma observação registrada." }}
+                        </div>
+                    </div>
+
+                    {% if order.status == 'canceled' %}
+                        <div class="bg-red-500/5 border border-red-500/20 p-4 rounded-lg text-center">
+                            <p class="text-xs text-red-400 font-medium font-mono">
+                                <i class="fas fa-lock mr-1"></i> PEDIDO CANCELADO E BLOQUEADO PARA ALTERAÇÕES.
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            {% endif %}
+        </div>
+
+        <div class="lg:col-span-7 space-y-4">
+            <div class="bg-[#1a1a1a] rounded-xl border border-zinc-800 overflow-hidden shadow-lg">
+                <div class="px-6 py-4 bg-black/30 border-b border-zinc-800 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-white">
+                        <i class="fas fa-boxes mr-2 text-zinc-500"></i>Produtos do Pedido
+                    </h2>
+                    <span class="text-xs bg-zinc-800 px-2.5 py-1 rounded-md text-zinc-400 border border-zinc-700 font-mono">
+                        {{ order.ordem_items.count }} item(ns)
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="bg-black/10 border-b border-zinc-800 text-xs font-semibold uppercase text-zinc-400 tracking-wider">
+                            <tr>
+                                <th class="p-4">Produto</th>
+                                <th class="p-4 text-center">Qtd.</th>
+                                <th class="p-4 text-right">Preço Un.</th>
+                                <th class="p-4 text-right">Subtotal</th>
+                                <th class="p-4 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-800/60">
+                            {% for item in order.items.all %}
+                                <tr class="hover:bg-zinc-800/20 transition-colors">
+                                    <td class="p-4">
+                                        <p class="text-sm font-medium text-zinc-200">{{ item.product.description }}</p>
+                                        <p class="text-xs text-zinc-300 font-mono">ID Estoque: #{{ item.product.id }}</p>
+                                    </td>
+                                    <td class="p-4 text-center text-sm text-zinc-300 font-mono">
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td class="p-4 text-right text-sm text-zinc-400 font-mono">
+                                        R$ {{ item.unit_price|floatformat:2 }}
+                                    </td>
+                                    <td class="p-4 text-right text-sm text-white font-medium font-mono">
+                                        R$ {{ item.subtotal|floatformat:2 }}
+                                    </td>
+                                    <td class="p-4 text-center">
+                                        {% if request.user.is_superuser and order.status != 'canceled' %}
+                                            <div class="flex justify-center items-center gap-1">
+                                                
+                                                <button type="button" 
+                                                    onclick="openEditItemModal(this)"
+                                                    data-id="{{ item.id }}"
+                                                    data-url="{% url "sales:update_order_item" item.id %}"
+                                                    data-product="{{ item.product.description }}"
+                                                    data-quantity="{{ item.quantity }}"
+                                                    class="p-1.5 text-zinc-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-md transition-all" 
+                                                    title="Editar Quantidade">
+                                                    <i class="fas fa-edit text-sm"></i>
+                                                </button>
+                                                
+                                                <form action="#" method="POST" class="inline-block m-0" onsubmit="return confirm('Tem certeza que deseja remover este item? O estoque será recalculado automaticamente.');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="p-1.5 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all" title="Remover Item">
+                                                        <i class="fas fa-trash text-sm"></i>
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        {% else %}
+                                            <span class="text-zinc-600 text-xs" title="Ações bloqueadas">
+                                                <i class="fas fa-lock"></i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-black/40 border-t border-zinc-800 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Volume total do pedido</p>
+                        <p class="text-sm font-medium text-zinc-300 mt-0.5">{{ order.total_quantity }} unidades de produtos</p>
+                    </div>
+                    <div class="text-right w-full sm:w-auto bg-emerald-500/5 border border-emerald-500/20 px-6 py-3 rounded-lg">
+                        <span class="block text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-1">Valor Total Geral</span>
+                        <span class="text-2xl font-black text-emerald-400 font-mono">R$ {{ order.total_value|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% include "sales/partials/modal_order_item.html" %}
