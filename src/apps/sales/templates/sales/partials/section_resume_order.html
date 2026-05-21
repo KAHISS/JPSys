@@ -112,13 +112,49 @@
         </div>
 
         <div class="lg:col-span-7 space-y-4">
+            
+            {% if request.user.is_superuser and order.status != 'canceled' %}
+                <div class="bg-[#1a1a1a] rounded-xl border border-zinc-800 p-4 shadow-sm relative">
+                    <h3 class="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-3">
+                        <i class="fas fa-plus-circle mr-1"></i> Adicionar Produto
+                    </h3>
+                    
+                    <form action="{% url "sales:add_order_item" order.id %}" method="POST" class="flex gap-3 relative">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" id="selected-product-id" required>
+                        
+                        <div class="flex-1 relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-zinc-500"></i>
+                            </div>
+                            <input type="text" id="product-search-input" oninput="searchProducts(this.value)" autocomplete="off"
+                                placeholder="Digite o nome do produto..." 
+                                class="w-full bg-black/50 border border-zinc-800 text-white rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                            
+                            <ul id="product-search-results" class="absolute z-50 w-full bg-zinc-900 border border-zinc-700 rounded-lg mt-1 shadow-2xl hidden max-h-60 overflow-y-auto divide-y divide-zinc-800">
+                                </ul>
+                        </div>
+
+                        <div class="w-24 relative">
+                            <input type="number" name="quantity" value="1" min="1" required
+                                class="w-full bg-black/50 border border-zinc-800 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center" title="Quantidade">
+                        </div>
+
+                        <button type="submit" id="add-product-btn" disabled
+                            class="bg-zinc-800 text-zinc-500 font-bold px-4 py-2.5 rounded-lg transition-all border border-zinc-700 cursor-not-allowed">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
             <div class="bg-[#1a1a1a] rounded-xl border border-zinc-800 overflow-hidden shadow-lg">
                 <div class="px-6 py-4 bg-black/30 border-b border-zinc-800 flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-white">
                         <i class="fas fa-boxes mr-2 text-zinc-500"></i>Produtos do Pedido
                     </h2>
                     <span class="text-xs bg-zinc-800 px-2.5 py-1 rounded-md text-zinc-400 border border-zinc-700 font-mono">
-                        {{ order.ordem_items.count }} item(ns)
+                        {{ order.items.count }} item(ns)
                     </span>
                 </div>
 
@@ -138,7 +174,7 @@
                                 <tr class="hover:bg-zinc-800/20 transition-colors">
                                     <td class="p-4">
                                         <p class="text-sm font-medium text-zinc-200">{{ item.product.description }}</p>
-                                        <p class="text-xs text-zinc-300 font-mono">ID Estoque: #{{ item.product.id }}</p>
+                                        <p class="text-xs text-zinc-500 font-mono">ID Estoque: #{{ item.product.id }}</p>
                                     </td>
                                     <td class="p-4 text-center text-sm text-zinc-300 font-mono">
                                         {{ item.quantity }}
@@ -149,6 +185,7 @@
                                     <td class="p-4 text-right text-sm text-white font-medium font-mono">
                                         R$ {{ item.subtotal|floatformat:2 }}
                                     </td>
+                                    
                                     <td class="p-4 text-center">
                                         {% if request.user.is_superuser and order.status != 'canceled' %}
                                             <div class="flex justify-center items-center gap-1">
@@ -156,7 +193,7 @@
                                                 <button type="button" 
                                                     onclick="openEditItemModal(this)"
                                                     data-id="{{ item.id }}"
-                                                    data-url="{% url "sales:update_order_item" item.id %}"
+                                                    data-url="{% url 'sales:update_order_item' item.id %}"
                                                     data-product="{{ item.product.description }}"
                                                     data-quantity="{{ item.quantity }}"
                                                     class="p-1.5 text-zinc-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-md transition-all" 
@@ -164,8 +201,9 @@
                                                     <i class="fas fa-edit text-sm"></i>
                                                 </button>
                                                 
-                                                <form action="#" method="POST" class="inline-block m-0" onsubmit="return confirm('Tem certeza que deseja remover este item? O estoque será recalculado automaticamente.');">
+                                                <form action="{% url 'sales:delete_order_item' item.id %}" method="POST" class="inline-block m-0" onsubmit="return confirm('Tem certeza que deseja remover este item? O estoque será recalculado automaticamente.');">
                                                     {% csrf_token %}
+                                                    <input type="hidden" name="order" value="{{ order.id }}">
                                                     <button type="submit" class="p-1.5 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all" title="Remover Item">
                                                         <i class="fas fa-trash text-sm"></i>
                                                     </button>
@@ -177,6 +215,13 @@
                                                 <i class="fas fa-lock"></i>
                                             </span>
                                         {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="p-8 text-center text-zinc-500">
+                                        <i class="fas fa-box-open text-3xl mb-3 opacity-50"></i>
+                                        <p>Nenhum produto adicionado ao pedido ainda.</p>
                                     </td>
                                 </tr>
                             {% endfor %}

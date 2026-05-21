@@ -9,9 +9,10 @@ from utils.pagination import make_pagination
 from utils.reporting_metrics import get_orders_sales_metrics
 from apps.sales.forms import OrderSaleForm
 from apps.sales.models import OrderSale, OrderItem
-from apps.inventory.models import PromoterStock
+from apps.inventory.models import PromoterStock, Product
 from apps.sales.filters import OrderSaleFilter
 from django.db import transaction
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -125,7 +126,7 @@ def order_sale_detail_view(request, pk):
     return render(request, 'sales/pages/order_resume.html', {
         'page_title': 'Resumo do pedido',
         'orders_sales_active': 'bg-amber-500 text-black font-semibold',
-        "page": "sales",
+        "page": "sales_detail",
         'order': order,
         'form': form,
         'title': f"Detalhes do Pedido #{order.id}",
@@ -150,3 +151,77 @@ def update_order_item(request, pk):
         messages.error(request, f"Erro ao alterar quantidade do item {e}")
 
     return redirect("sales:order_resume", order)
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def delete_order_item(request, pk):
+    if not request.user.is_superuser or not request.POST:
+        raise Http404("Você não tem permissão para alterar os itens do pedido")
+
+    item = OrderItem.objects.get(id=pk)
+    order = request.POST.get("order")
+
+    try:
+        item.product.stock_quantity += item.quantity
+        item.product.save()
+        item.delete()
+        messages.success(
+            request, f"Item '{item.product.description}' removido do pedido com sucesso!")
+    except Exception as e:
+        messages.error(request, f"Erro ao remover item do pedido {e}")
+
+    return redirect("sales:order_resume", order)
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def get_products_search(request):
+    if not request.user.is_superuser or not request.GET:
+        return JsonResponse({'results': []})
+
+    query = request.GET.get('q', '')
+
+    if not query:
+        return JsonResponse({'results': []})
+
+    products = Product.objects.filter(
+        Q(description__icontains=query) | Q(barcode__icontains=query)
+    )[:10]
+
+    results = []
+    
+    for prod in products:
+        results.append({
+            'id': prod.id,
+            'description': prod.description,
+            'stock': prod.stock_quantity,
+            'price': str(prod.sale_price),
+        })
+
+    return JsonResponse({'results': results})
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def add_order_item(request, pk):
+    if not request.user.is_superuser or not request.POST:
+        raise Http404("Você não tem permissão para adicionar itens ao pedido")
+
+    order = get_object_or_404(OrderSale, id=pk)
+
+    product_id = request.POST.get("product_id")
+    quantity = request.POST.get("quantity")
+
+    try:
+        product = Product.objects.get(id=product_id)
+
+        OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=int(quantity),
+            unit_price=product.sale_price
+        )
+
+        messages.success(
+            request, f"Produto '{product.description}' adicionado ao pedido com sucesso!")
+    except Exception as e:
+        messages.error(request, f"Erro ao adicionar produto ao pedido {e}")
+
+    return redirect("sales:order_resume", pk=order.id)

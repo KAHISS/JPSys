@@ -1,4 +1,4 @@
-<tr class="hover:bg-zinc-800/50 transition-colors" onclick="window.location='{% url 'sales:order_resume' order.id %}'">
+<tr class="hover:bg-zinc-800/50 transition-colors cursor-pointer" onclick="window.location='{% url 'sales:order_resume' order.id %}'">
     <td class="p-4">
         <p class="text-sm font-bold text-white">#{{ order.id }}</p>
         <p class="text-xs text-zinc-300 font-mono">Criado em {{ order.created_at|date:"d/m/Y - H:i" }}</p>

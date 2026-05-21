@@ -1,0 +1,20 @@
+<div class="product-card bg-zinc-900 rounded-xl p-4 border border-zinc-800 hover:border-amber-500/50 transition-colors group flex flex-col h-full shadow-lg" data-category="capinhas">
+    <div class="relative aspect-[4/5] bg-zinc-950 rounded-lg overflow-hidden mb-4">
+        <img src="{{ product.image.url }}" alt="Capinha Couro" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+        <span class="absolute top-2 left-2 bg-amber-500 text-zinc-950 text-[10px] font-extrabold px-2 py-1 rounded uppercase tracking-wider shadow-sm">Top Vendas</span>
+    </div>
+    <div class="flex flex-col flex-grow">
+        <span class="text-[10px] text-amber-500 uppercase font-bold tracking-wider mb-1">{{ product.category.name|default:"Sem categoria" }}</span>
+        <h3 class="text-sm font-medium text-zinc-200 mb-2 line-clamp-2">{{ product.description }}</h3>
+        <div class="mt-auto pt-4 border-t border-zinc-800/80">
+            <div class="flex items-end justify-between">
+                <div>
+                    <p class="text-lg font-bold text-white">R$ {{ product.sale_price|floatformat:2|default:"0,00" }}</p>
+                </div>
+                <button class="add-to-cart h-8 w-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 hover:bg-amber-500 hover:text-zinc-950 hover:border-amber-500 text-zinc-300 rounded-lg transition-all active:scale-95" title="Adicionar">
+                    <i class="fas fa-plus text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
