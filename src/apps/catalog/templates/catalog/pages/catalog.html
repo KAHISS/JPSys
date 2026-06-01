@@ -1,39 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JP Acessórios | Catálogo</title>
+    <script src="{% static "catalog/js/search_bar.js" %}"></script>
+    <script src="{% static "catalog/js/sidebar.js" %}"></script>
+    <link rel="stylesheet" href="{% static "catalog/css/transitions.css" %}">
     <!-- Tailwind CSS (Usando a paleta padrão do Tailwind como no seu template) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome 6.4.0 (Igual ao template) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Transições suaves para os filtros */
-        .product-card {
-            transition: all 0.3s ease;
-        }
-        .product-card.hidden {
-            display: none;
-        }
-        
-        /* Oculta scrollbar mas permite scroll horizontal nas categorias */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        
-        /* Efeito de brilho suave nas imagens */
-        .amber-glow {
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); /* amber-500 com opacidade */
-        }
-    </style>
 </head>
 <body class="bg-zinc-950 font-sans text-zinc-100 antialiased selection:bg-amber-500 selection:text-zinc-950">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
 
+    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-72 bg-zinc-900 border-r border-zinc-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col md:hidden shadow-2xl">
+        
+        <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800">
+            <div class="flex items-center cursor-pointer">
+                <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
+                <span class="text-amber-500 font-serif font-bold text-xl tracking-wider">JP</span>
+            </div>
+            <button id="closeSidebarBtn" class="text-zinc-500 hover:text-amber-500 transition-colors h-8 w-8 flex items-center justify-center bg-zinc-950 rounded border border-zinc-800">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2 no-scrollbar">
+            <a href="{% url "catalog:catalog_list" %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                <i class="fas fa-home w-5 text-center text-zinc-500"></i> Início
+            </a>
+            
+            <div class="my-4 border-t border-zinc-800/50"></div>
+            
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                <i class="fas fa-user w-5 text-center text-zinc-500"></i> Minha Conta
+            </a>
+            <a href="{% url "sales:orders_sales_list" %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                <i class="fas fa-box w-5 text-center text-zinc-500"></i> Meus Pedidos
+            </a>
+        </nav>
+
+        <div class="p-6 border-t border-zinc-800 bg-zinc-950/50">
+            <a href="#" class="flex items-center gap-2 justify-center w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-green-400 hover:text-green-300 rounded-lg transition-colors font-medium border border-zinc-700">
+                <i class="fab fa-whatsapp text-lg"></i> Atendimento
+            </a>
+        </div>
+    </aside>
     <!-- Navegação / Cabeçalho -->
     <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,35 +56,64 @@
                 
                 <!-- Logo -->
                 <div class="flex items-center cursor-pointer group">
-                    <div class="text-2xl font-serif font-bold tracking-wider group-hover:scale-105 transition-transform">
-                        <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-8 h-8 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
-                        <span class="text-amber-500">JP</span><span class="text-white text-lg ml-1">Acessórios</span>
+                    <div class="text-2xl font-serif font-bold tracking-wider group-hover:scale-105 transition-transform flex items-center group">
+                        <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
+                        <a href="{% url "catalog:catalog_list" %}">
+                            <span class="text-amber-500">JP</span><span class="text-white text-lg ml-1">Acessórios</span>
+                        </a>
                     </div>
                 </div>
 
                 <!-- Barra de Pesquisa (Desktop) -->
                 <div class="hidden md:flex flex-1 max-w-md mx-8">
-                    <div class="relative w-full">
+                    <form method="GET" action="{% url "catalog:catalog_list" %}" class="relative w-full max-w-md mx-auto">      
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-zinc-500 text-sm"></i>
+                        </div>   
+                        <input type="text" name="q" id="mobileSearchInput" placeholder="Buscar nome ou código de um produto..." 
+                            class="block w-full pl-11 pr-10 py-3 border border-zinc-800 rounded-lg leading-5 bg-zinc-950 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm shadow-inner">        
+                    </form>
+                </div>
+
+                <!-- Barra de Pesquisa (Mobile) - Oculta por padrão -->
+                <div id="mobileSearchBar" class="hidden absolute top-20 left-0 w-full px-4 pb-4 bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 md:hidden z-40 origin-top transition-all duration-300 transform scale-y-0 opacity-0">
+                    
+                    <form method="GET" action="{% url "catalog:catalog_list" %}" class="relative w-full max-w-md mx-auto">
+                        
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fas fa-search text-zinc-500 text-sm"></i>
                         </div>
-                        <input type="text" id="searchInput" placeholder="Buscar produtos premium..." 
-                            class="block w-full pl-11 pr-4 py-2.5 border border-zinc-800 rounded-lg leading-5 bg-zinc-950 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm shadow-inner">
-                    </div>
+                        
+                        <input type="text" name="q" id="mobileSearchInput" placeholder="Buscar nome ou código de um produto... " 
+                            class="block w-full pl-11 pr-10 py-3 border border-zinc-800 rounded-lg leading-5 bg-zinc-950 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm shadow-inner">
+                        
+                        <button type="button" id="closeMobileSearchBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-amber-500 transition-colors">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                        
+                    </form>
                 </div>
 
                 <!-- Ícones de Ação -->
-                <div class="flex items-center gap-5">
-                    <button class="text-zinc-400 hover:text-amber-500 transition-colors md:hidden">
+                <div class="flex items-center gap-4 sm:gap-5">
+                    
+                    <button id="mobileMenuBtn" class="text-zinc-400 hover:text-amber-500 transition-colors md:hidden">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    
+                    <button id="mobileSearchBtn" class="text-zinc-400 hover:text-amber-500 transition-colors md:hidden">
                         <i class="fas fa-search text-lg"></i>
                     </button>
-                    <button class="text-zinc-400 hover:text-amber-500 transition-colors hidden sm:block">
+                    
+                    <button class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block">
                         <i class="fas fa-user text-lg"></i>
                     </button>
-                    <button class="text-zinc-400 hover:text-amber-500 transition-colors relative" id="cartBtn">
+                    
+                    <button class="text-zinc-400 hover:text-amber-500 transition-colors relative hidden md:block" id="cartBtn">
                         <i class="fas fa-shopping-cart text-lg"></i>
                         <span id="cartCount" class="absolute -top-2 -right-2.5 bg-amber-500 text-zinc-950 text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center scale-0 transition-transform duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]">0</span>
                     </button>
+                    
                 </div>
             </div>
         </div>
@@ -82,32 +126,6 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Banner Destaque Premium -->
-        <section class="bg-zinc-900 rounded-2xl overflow-hidden mb-10 relative border border-zinc-800 amber-glow">
-            <div class="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center grayscale mix-blend-overlay"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
-            
-            <div class="relative z-10 px-6 py-12 sm:px-12 sm:py-16 md:flex md:items-center md:justify-between">
-                <div class="text-center md:text-left md:max-w-xl">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-950 border border-amber-500/30 text-amber-500 text-xs font-bold rounded-lg mb-5 tracking-widest uppercase shadow-sm">
-                        <i class="fas fa-star text-[10px]"></i> Coleção Exclusiva
-                    </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-5xl mb-4">
-                        Poder e Elegância
-                    </h1>
-                    <p class="text-lg text-zinc-400 mb-8">
-                        Conheça nossa nova linha de acessórios premium. Proteção de alto nível com acabamento sofisticado para o seu dispositivo.
-                    </p>
-                    <button class="bg-amber-500 text-zinc-950 font-bold py-3 px-8 rounded-lg shadow-md hover:bg-amber-400 hover:shadow-amber-500/30 transition-all active:scale-95">
-                        Explorar Coleção
-                    </button>
-                </div>
-                <div class="hidden md:block opacity-10">
-                    <i class="fas fa-shield-halved text-[12rem] text-amber-500"></i>
-                </div>
-            </div>
-        </section>
 
         <!-- Filtros de Categorias -->
         <section class="mb-8">
@@ -129,7 +147,7 @@
         <!-- Grade de Produtos -->
         <section id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             
-            {% for product in products %}
+            {% for product in objects %}
                 {% include "catalog/partials/product_card.html" %}
             {% empty %}
                 <div id="emptyState" class="hidden text-center py-16">
@@ -139,43 +157,82 @@
                 </div>
             {% endfor %}
 
+            
         </section>
+        {% if objects.has_other_pages %}
+        <div class="mt-12 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-zinc-400">
+            <nav class="flex items-center gap-2" aria-label="Paginação">
+                
+                {% if objects.has_previous %}
+                    <a href="?page={{ objects.previous_page_number }}{{ additional_url_query }}" class="h-10 w-10 flex items-center justify-center border border-zinc-800 rounded-lg bg-zinc-900 hover:border-amber-500/50 hover:text-amber-500 transition-all active:scale-95 shadow-sm" title="Página Anterior">
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </a>
+                {% else %}
+                    <button class="h-10 w-10 flex items-center justify-center border border-zinc-900 rounded-lg bg-zinc-950 text-zinc-700 cursor-not-allowed" disabled>
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </button>
+                {% endif %}
 
+                {% if pagination_range.first_page_out_of_range %}
+                    <a href="?page=1{{ additional_url_query }}" class="hidden sm:flex h-10 w-10 items-center justify-center border border-zinc-800 rounded-lg bg-zinc-900 hover:border-amber-500/50 hover:text-amber-500 transition-all shadow-sm">1</a>
+                    <span class="hidden sm:flex px-1 text-zinc-600">...</span>
+                {% endif %}
+
+                <div class="hidden sm:flex gap-2">
+                    {% for page in pagination_range.pagination %}
+                        {% if page == pagination_range.current_page %}
+                            <span class="h-10 w-10 flex items-center justify-center bg-amber-500 text-zinc-950 font-bold rounded-lg shadow-[0_0_10px_rgba(245,158,11,0.3)] cursor-default">
+                                {{ page }}
+                            </span>
+                        {% else %}
+                            <a href="?page={{ page }}{{ additional_url_query }}" class="h-10 w-10 flex items-center justify-center border border-zinc-800 rounded-lg bg-zinc-900 text-zinc-300 hover:border-amber-500/50 hover:text-amber-500 transition-all shadow-sm">
+                                {{ page }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="sm:hidden flex items-center px-4 text-sm font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 rounded-lg h-10">
+                    Pág {{ pagination_range.current_page }} de {{ pagination_range.total_pages }}
+                </div>
+
+                {% if pagination_range.last_page_out_of_range %}
+                    <span class="hidden sm:flex px-1 text-zinc-600">...</span>
+                    <a href="?page={{ pagination_range.total_pages }}{{ additional_url_query }}" class="hidden sm:flex h-10 w-10 items-center justify-center border border-zinc-800 rounded-lg bg-zinc-900 hover:border-amber-500/50 hover:text-amber-500 transition-all shadow-sm">
+                        {{ pagination_range.total_pages }}
+                    </a>
+                {% endif %}
+
+                {% if objects.has_next %}
+                    <a href="?page={{ objects.next_page_number }}{{ additional_url_query }}" class="h-10 w-10 flex items-center justify-center border border-zinc-800 rounded-lg bg-zinc-900 hover:border-amber-500/50 hover:text-amber-500 transition-all active:scale-95 shadow-sm" title="Próxima Página">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+                {% else %}
+                    <button class="h-10 w-10 flex items-center justify-center border border-zinc-900 rounded-lg bg-zinc-950 text-zinc-700 cursor-not-allowed" disabled>
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </button>
+                {% endif %}
+                
+            </nav>
+        </div>
+        {% endif %}
     </main>
 
     <!-- Rodapé -->
     <footer class="bg-zinc-900 border-t border-zinc-800 mt-16 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center mb-6">
-                        <div class="text-2xl font-serif font-bold tracking-wider">
+            <div class="w-full">
+                <div class="">
+                    <div class="flex items-center mb-6 justify-between ">
+                        <div class="text-2xl font-serif font-bold tracking-wider flex items-center group">
                             <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-8 h-8 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
                             <span class="text-amber-500">JP</span><span class="text-white text-lg ml-1">Acessórios</span>
                         </div>
+                        <div class="flex gap-4">
+                            <a href="#" class="h-10 w-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-green-400 hover:text-amber-500 hover:border-amber-500/50 transition-all"><i class="fab fa-whatsapp"></i></a>
+                        </div>
                     </div>
-                    <div class="flex gap-4">
-                        <a href="#" class="h-10 w-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="h-10 w-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all"><i class="fab fa-facebook-f"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-200 mb-6 uppercase tracking-wider text-sm">Coleções</h4>
-                    <ul class="space-y-3 text-sm text-zinc-500">
-                        {% for category in categories %}
-                            <li><a href="#" class="hover:text-amber-500 transition-colors">{{ name }}</a></li>
-                        {% empty %}
-                            <li class="text-zinc-600">Nenhuma coleção disponível.</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-zinc-200 mb-6 uppercase tracking-wider text-sm">Atendimento</h4>
-                    <ul class="space-y-3 text-sm text-zinc-500">
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Meus Pedidos</a></li>
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Contato</a></li>
-                    </ul>
                 </div>
             </div>
             <div class="border-t border-zinc-800 mt-12 pt-8 text-center text-xs text-zinc-600 uppercase tracking-widest">

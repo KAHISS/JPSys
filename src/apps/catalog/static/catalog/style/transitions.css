@@ -1,21 +1,21 @@
-    /* Transições suaves para os filtros */
-    .product-card {
-        transition: all 0.3s ease;
-    }
-    .product-card.hidden {
-        display: none;
-    }
-    
-    /* Oculta scrollbar mas permite scroll horizontal nas categorias */
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-    
-    /* Efeito de brilho suave nas imagens */
-    .amber-glow {
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); /* amber-500 com opacidade */
-    }
+/* Transições suaves para os filtros */
+.product-card {
+    transition: all 0.3s ease;
+}
+.product-card.hidden {
+    display: none;
+}
+
+/* Oculta scrollbar mas permite scroll horizontal nas categorias */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Efeito de brilho suave nas imagens */
+.amber-glow {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); /* amber-500 com opacidade */
+}
