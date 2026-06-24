@@ -1,0 +1,55 @@
+<div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 relative overflow-hidden shadow-sm group" id="cart-item-{{ item.id }}">
+    
+    <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800/80 relative">
+        {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.description }}" class="w-full h-full object-cover">
+        {% else %}
+            <div class="w-full h-full flex items-center justify-center text-zinc-700">
+                <i class="fas fa-image text-2xl"></i>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="flex-1 min-w-0 flex flex-col justify-center h-full">
+        <span class="text-[10px] text-amber-500 uppercase font-bold tracking-wider mb-1">{{ item.product.category.name|default:"Produto" }}</span>
+        <h3 class="text-base font-medium text-zinc-200 line-clamp-2 mb-2 pr-8">{{ item.product.description }}</h3>
+        <div class="text-sm text-zinc-400">Preço Unitário: <span class="text-zinc-200">R$ {{ item.product.sale_price|floatformat:2|default:"0,00" }}</span></div>
+    </div>
+
+    <div class="flex sm:flex-col items-center justify-between sm:justify-center sm:items-end w-full sm:w-auto gap-4 sm:gap-2 mt-2 sm:mt-0">
+        <div class="text-lg font-bold text-white">
+            R$ {{ item.subtotal|floatformat:2|default:"0,00" }}
+        </div>
+        
+        <div class="flex items-center border border-zinc-700 rounded-lg bg-zinc-950 p-1">
+            <form method="POST" action="" class="remove-quantity-form flex items-center">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="decrease">
+                <input type="hidden" name="url" value="{% url 'catalog:update_cart' %}">
+                <input type="hidden" name="item_id" value="{{ item.product.id }}">
+                <button type="submit" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors">
+                    <i class="fas fa-minus text-xs"></i>
+                </button>
+                <span class="w-10 text-center text-sm font-medium text-zinc-200 select-none" id="quantity">
+                    {{ item.quantity }}
+                </span>
+                <button type="submit" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors">
+                    <i class="fas fa-plus text-xs"></i>
+                </button>
+            </form>
+            
+            <form method="POST" action="{% url "catalog:update_cart" %}" class="add-quantity-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="increase">
+                <input type="hidden" name="item_id" value="{{ item.product.id }}">
+            </form>
+        </div>
+    </div>
+
+    <form method="POST" action="#" class="absolute top-3 right-3 sm:static">
+        {% csrf_token %}
+        <button type="submit" class="h-10 w-10 sm:h-10 sm:w-10 flex items-center justify-center bg-zinc-950 border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 rounded-lg transition-all active:scale-95" title="Remover do carrinho">
+            <i class="fas fa-trash-alt text-sm"></i>
+        </button>
+    </form>
+</div>

@@ -5,6 +5,7 @@ from apps.users.forms import LoginForm
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 def login_view(request):
@@ -30,11 +31,17 @@ def login_create(request):
         if authenticate_user is not None:
             messages.success(request, 'Login realizado com sucesso!')
             login(request, authenticate_user)
+
+            next_url = request.POST.get('next') or request.GET.get('next')
+
+            if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+
             if request.user.is_superuser:
                 return redirect(reverse('inventory:inventory_list'))
             elif request.user.type == "promoter":
                 return redirect(reverse('sales:promoters_sales_list'))
-            elif request.user.type == "client":
+            else:  # Considerando cliente como padrão se falhar os de cima
                 return redirect(reverse('sales:orders_sales_list'))
 
         else:

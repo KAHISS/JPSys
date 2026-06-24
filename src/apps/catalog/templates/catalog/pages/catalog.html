@@ -17,7 +17,7 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
 
     <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-72 bg-zinc-900 border-r border-zinc-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col md:hidden shadow-2xl">
-        
+            
         <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800">
             <div class="flex items-center cursor-pointer">
                 <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
@@ -29,18 +29,32 @@
         </div>
 
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2 no-scrollbar">
-            <a href="{% url "catalog:catalog_list" %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+            <a href="{% url 'catalog:catalog_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
                 <i class="fas fa-home w-5 text-center text-zinc-500"></i> Início
             </a>
             
             <div class="my-4 border-t border-zinc-800/50"></div>
             
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
-                <i class="fas fa-user w-5 text-center text-zinc-500"></i> Minha Conta
-            </a>
-            <a href="{% url "sales:orders_sales_list" %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
-                <i class="fas fa-box w-5 text-center text-zinc-500"></i> Meus Pedidos
-            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'catalog:perfil' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                    <i class="fas fa-user w-5 text-center text-zinc-500"></i> Minha Conta
+                </a>
+                <a href="{% url 'sales:orders_sales_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                    <i class="fas fa-box w-5 text-center text-zinc-500"></i> Meus Pedidos
+                </a>
+                <form action="{% url "users:logout" %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="username" value="{{ user.username }}">
+                    <button type="submit" class="w-full flex items-center space-x-3 p-3 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-200 font-medium">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                        <span>Sair do Sistema</span>
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="flex items-center gap-3 px-4 py-3 mt-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-zinc-950 border border-amber-500/30 rounded-lg transition-all font-medium group">
+                    <i class="fas fa-sign-in-alt w-5 text-center group-hover:scale-110 transition-transform"></i> Fazer Login
+                </a>
+            {% endif %}
         </nav>
 
         <div class="p-6 border-t border-zinc-800 bg-zinc-950/50">
@@ -105,15 +119,35 @@
                         <i class="fas fa-search text-lg"></i>
                     </button>
                     
-                    <button class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block">
-                        <i class="fas fa-user text-lg"></i>
-                    </button>
-                    
-                    <button class="text-zinc-400 hover:text-amber-500 transition-colors relative hidden md:block" id="cartBtn">
-                        <i class="fas fa-shopping-cart text-lg"></i>
-                        <span id="cartCount" class="absolute -top-2 -right-2.5 bg-amber-500 text-zinc-950 text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center scale-0 transition-transform duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]">0</span>
-                    </button>
-                    
+                    {% if user.is_authenticated %}
+                            
+                        {% if user.is_superuser %}
+                            <a href="{% url 'users:users_list' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Painel Administrativo">
+                                <i class="fas fa-shield-alt text-lg"></i>
+                            </a>
+                        {% endif %}
+
+                        <a href="{% url 'sales:orders_sales_list' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Meus Pedidos">
+                            <i class="fas fa-box text-lg"></i>
+                        </a>
+
+                        <a href="{% url 'catalog:perfil' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Minha Conta">
+                            <i class="fas fa-user text-lg"></i>
+                        </a>
+
+                        <a href="{% url "catalog:cart" %}" class="text-zinc-400 hover:text-amber-500 transition-colors relative flex items-center" id="cartBtn" title="Meu Carrinho">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                            
+                            <span id="cartCount" class="absolute -top-2 -right-2.5 bg-amber-500 text-zinc-950 text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)] {% if cart.total_quantity and cart.total_quantity > 0 %}scale-100{% else %}scale-0{% endif %}">
+                                {{ cart.total_quantity|default:"0" }}
+                            </span>
+                        </a>
+
+                    {% else %}
+                        <a href="{% url 'users:login' %}?next={{ request.path }}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Fazer Login">
+                            <i class="fas fa-sign-in-alt text-lg"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

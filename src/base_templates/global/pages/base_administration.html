@@ -74,14 +74,14 @@
                     <i class="fas fa-clipboard-list w-5 text-center"></i>
                     <span>Pedidos de vendas</span>
                 </a>
-                <a href="{% url "catalog:catalog_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg {{ inventory_active }} font-semibold transition-colors duration-200  stock">
-                    <i class="fas fa-house w-5 text-center"></i>
-                    <span>Catalogo</span>
-                </a>
             </nav>
 
             <!-- Rodapé Sidebar -->
             <div class="p-4 border-t border-zinc-800">
+                <a href="{% url "catalog:catalog_list" %}" class="nav-btn w-full flex items-center space-x-3 p-3 rounded-lg font-semibold transition-colors duration-200  stock">
+                    <i class="fas fa-house w-5 text-center"></i>
+                    <span>Catalogo</span>
+                </a>
                 <form action="{% url "users:logout" %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="username" value="{{ user.username }}">
@@ -110,9 +110,14 @@
                     <div class="h-8 w-px bg-zinc-700"></div>
                     <div class="flex items-center gap-3 cursor-pointer group">
                         <div class="hidden md:block text-right">
-                            <p class="text-sm font-medium text-white transition-colors">{{ user.username }}</p>
+                            <a href="{% url "catalog:perfil" %}">
+                                <p class="text-sm font-medium text-white transition-colors">{{ user.username }}</p>
+                            </a>
                         </div>
-                        <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=f59e0b&color=000" class="w-10 h-10 rounded-full border-2 border-amber-500 shadow-sm shadow-amber-500/30" alt="Avatar do Utilizador">
+                        <a href="{% url "catalog:perfil" %}">
+                            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=f59e0b&color=000" class="w-10 h-10 rounded-full border-2 border-amber-500 shadow-sm shadow-amber-500/30" alt="Avatar do Utilizador">
+                        </a>
+                        
                     </div>
                 </div>
             </header>

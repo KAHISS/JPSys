@@ -1,5 +1,5 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
@@ -19,7 +19,7 @@ class User(AbstractUser):
     city = models.CharField(
         "Endereço", max_length=255, blank=True, null=True)
     document = models.CharField(
-        "Documento", max_length=255, blank=True, null=True)
+        "Documento", max_length=15, blank=True, null=True)
     comission = models.DecimalField(
         "Comissão", max_digits=10, decimal_places=2, default=0.00, blank=True, null=True)
 

@@ -16,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-substitua-isso-no-env')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-ALLOWED_HOSTS.append("192.168.1.251")
+ALLOWED_HOSTS.append("192.168.1.108")
 
 AUTH_USER_MODEL = 'users.User'
 
