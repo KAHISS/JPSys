@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JP Acessórios | Catálogo</title>
-    <script src="{% static "catalog/js/search_bar.js" %}"></script>
-    <script src="{% static "catalog/js/sidebar.js" %}"></script>
+    <script src="{% static "catalog/js/search_bar.js" %}" defer></script>
+    <script src="{% static "catalog/js/sidebar.js" %}" defer></script>
+    <script src="{% static "catalog/js/c_catalog.js" %}" defer></script>
     <link rel="stylesheet" href="{% static "catalog/css/transitions.css" %}">
     <!-- Tailwind CSS (Usando a paleta padrão do Tailwind como no seu template) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,6 +171,7 @@
             </div>
             
             <div class="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+                <input type="hidden" id="action-url" value="{% url 'catalog:update_cart' %}">
                 {% for category in categories %}
                     {% include "catalog/partials/categories.html"%}
                 {% empty %}

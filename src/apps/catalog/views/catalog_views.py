@@ -46,8 +46,11 @@ def catalog_list(request):
 
     categories = Category.objects.all().order_by("name")
 
-    cart = Cart.objects.get(
-        user=request.user) if request.user.is_authenticated else None
+    if request.user.is_authenticated:
+    # get_or_create retorna uma tupla: (objeto, foi_criado)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+    else:
+        cart = None
 
     products, pagination_range = make_pagination(
         request, queryset, PER_PAGE)

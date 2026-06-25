@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JP Acessórios | Meu Carrinho</title>
-    <script src="{% static 'catalog/js/search_bar.js' %}"></script>
-    <script src="{% static 'catalog/js/sidebar.js' %}"></script>
-    <script src="{% static "catalog/js/cd_cart,js" %}" ></script>
+    <script src="{% static 'catalog/js/search_bar.js' %}" defer></script>
+    <script src="{% static 'catalog/js/sidebar.js' %}" defer></script>
+    <script src="{% static 'catalog/js/cd_cart.js' %}" defer></script>
     <link rel="stylesheet" href="{% static 'catalog/css/transitions.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,6 @@
     </style>
 </head>
 <body class="bg-zinc-950 font-sans text-zinc-100 antialiased selection:bg-amber-500 selection:text-zinc-950">
-    
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
     <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-72 bg-zinc-900 border-r border-zinc-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col md:hidden shadow-2xl">
         <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800">
@@ -123,7 +122,6 @@
                     
                     <a href="#" class="text-amber-500 transition-colors relative hidden md:block" id="cartBtn">
                         <i class="fas fa-shopping-cart text-lg"></i>
-                        <span id="cartCount" class="absolute -top-2 -right-2.5 bg-amber-500 text-zinc-950 text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]">{{ cart.total_quantity|default:"0" }}</span>
                     </a>
                 </div>
             </div>
@@ -131,7 +129,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        
         <div class="flex items-center gap-3 mb-8">
             <button onclick="window.history.back()" class="h-10 w-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 rounded-lg transition-all active:scale-95 mr-2">
                 <i class="fas fa-arrow-left text-sm"></i>
@@ -145,6 +142,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <div class="lg:col-span-2 space-y-4">
+                    <input type="hidden" id="action-url" value="{% url 'catalog:update_cart' %}">
                     {% for item in cart.cart_cart_items.all %}
                         {% include "catalog/partials/cart_item.html" %}
                     {% endfor %}

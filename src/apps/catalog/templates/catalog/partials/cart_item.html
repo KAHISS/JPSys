@@ -17,23 +17,20 @@
     </div>
 
     <div class="flex sm:flex-col items-center justify-between sm:justify-center sm:items-end w-full sm:w-auto gap-4 sm:gap-2 mt-2 sm:mt-0">
-        <div class="text-lg font-bold text-white">
+        <div class="text-lg font-bold text-white" id="subtotal">
             R$ {{ item.subtotal|floatformat:2|default:"0,00" }}
         </div>
         
         <div class="flex items-center border border-zinc-700 rounded-lg bg-zinc-950 p-1">
-            <form method="POST" action="" class="remove-quantity-form flex items-center">
+            <form method="POST" action="" class="remove-quantity-form flex items-center" id="{{ item.product.id }}">
                 {% csrf_token %}
-                <input type="hidden" name="action" value="decrease">
-                <input type="hidden" name="url" value="{% url 'catalog:update_cart' %}">
-                <input type="hidden" name="item_id" value="{{ item.product.id }}">
-                <button type="submit" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors">
+                <button class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors update-btn" value="decrease">
                     <i class="fas fa-minus text-xs"></i>
                 </button>
                 <span class="w-10 text-center text-sm font-medium text-zinc-200 select-none" id="quantity">
                     {{ item.quantity }}
                 </span>
-                <button type="submit" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors">
+                <button class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-amber-500 hover:bg-zinc-900 rounded transition-colors update-btn" value="increase">
                     <i class="fas fa-plus text-xs"></i>
                 </button>
             </form>

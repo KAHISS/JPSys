@@ -25,7 +25,7 @@ def cart_view(request):
 
 @login_required(login_url='users:login')
 def update_cart(request):
-    if not request.POST:
+    if request.method != "POST":
         return JsonResponse({'success': False, 'message': 'Acesso inválido. Esperado POST.'}, status=400)
     try:
         if request.content_type == 'application/json':
@@ -34,27 +34,28 @@ def update_cart(request):
             data = request.POST
 
         product_id = data.get('product_id')
-        action = data.get('action')
 
         try:
-            quantity = int(
-                data.get('quantity', 1 if action == 'increase' else -1))
-            print(data)
+            quantity = int(data.get('quantity'))
+
         except ValueError:
             return JsonResponse({'success': False, 'message': 'Quantidade inválida.'}, status=400)
 
+        print("ola efewfwe")
         product = get_object_or_404(Product, id=product_id)
-
+        print("ola efewfwe")
         cart, created = Cart.objects.get_or_create(user=request.user)
-
+        print(product)
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
-            unit_price=product.sale_price,
-            defaults={'quantity': 0}
+            defaults={'quantity': 1}
         )
-
-        nova_quantidade = cart_item.quantity + quantity
+  
+        if item_created:
+            nova_quantidade = 1
+        else:
+            nova_quantidade = cart_item.quantity + quantity
 
         if product.stock_quantity and nova_quantidade > product.stock_quantity:
             return JsonResponse({
@@ -63,15 +64,24 @@ def update_cart(request):
             }, status=400)
 
         cart_item.quantity = nova_quantidade
-        cart_item.save()
+        cart_item_id = cart_item.id
+
+        if cart_item.quantity <= 0:
+            deleted = True
+            
+            cart_item.delete()
+        else:
+            deleted = False
+            cart_item.save()
 
         return JsonResponse({
             'success': True,
+            'deleted': deleted,
             'message': f'{quantity}x {product.description} adicionado ao carrinho!',
             'cart_total_quantity': cart.total_quantity,
-            'cart_total_price': f'R$ {cart.total_price:,.2f}',
+            'cart_total_price': f'{cart.total_price:,.2f}',
             'cart_item': {
-                'id': cart_item.id,
+                'id': cart_item_id,
                 'quantity': cart_item.quantity,
                 'total_price': f'R$ {cart_item.subtotal:,.2f}'
             }
