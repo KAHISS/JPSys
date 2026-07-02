@@ -1,3 +1,5 @@
+import { toastMessage } from "/static/catalog/js/toast.js"
+
 const addItemsBtns = document.querySelectorAll('.add-to-cart');
 const url = document.getElementById('action-url').value
 
@@ -40,7 +42,7 @@ const updateCart = (url, csrfToken, productId, quantity) => {
         if (data.success) {
             const toast = document.getElementById("cartCount")
             toast.innerText = data.cart_total_quantity
-            alert("Produto adicionado ao carrinho com sucesso")
+            toastMessage("Produto adicionado ao carrinho com sucesso")
         } else {
             // Erro de estoque ou validação
             alert('Erro: ' + data.message);

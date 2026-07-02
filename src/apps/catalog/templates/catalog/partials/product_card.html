@@ -9,13 +9,21 @@
         <h3 class="text-sm font-medium text-zinc-200 mb-2 line-clamp-2">{{ product.description }}</h3>
         <div class="mt-auto pt-4 border-t border-zinc-800/80">
             <div class="flex items-end justify-between" id="{{ product.id }}">
-                <div>
-                    <p class="text-lg font-bold text-white">R$ {{ product.sale_price|floatformat:2|default:"0,00" }}</p>
-                </div>
                 {% csrf_token %}
-                <button class="add-to-cart h-8 w-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 hover:bg-amber-500 hover:text-zinc-950 hover:border-amber-500 text-zinc-300 rounded-lg transition-all active:scale-95" title="Adicionar" value="increase">
-                    <i class="fas fa-plus text-sm"></i>
-                </button>
+                {% if product.type == "chip" %}
+                    <div class="flex gap-4 w-full">
+                        <a href="#" class="flex gap-2 h-10 w-full rounded-lg bg-zinc-800 border border-3 border-green-700 flex items-center justify-center text-green-400 hover:text-amber-500 hover:border-amber-500/50 transition-all">
+                            <i class="fab fa-whatsapp"></i> <span>Saiba mais</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <div>
+                        <p class="text-lg font-bold text-white">R$ {{ product.sale_price|floatformat:2|default:"0,00" }}</p>
+                    </div>
+                    <button class="add-to-cart h-8 w-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 hover:bg-amber-500 hover:text-zinc-950 hover:border-amber-500 text-zinc-300 rounded-lg transition-all active:scale-95" title="Adicionar" value="increase">
+                        <i class="fas fa-plus text-sm"></i>
+                    </button>
+                {% endif %}
             </div>
         </div>
     </div>

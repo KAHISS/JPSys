@@ -23,29 +23,16 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        return sum(item.subtotal for item in self.cart_cart_items.all())
+        return sum(item.subtotal for item in self.cart_items.all())
 
     @property
     def total_quantity(self):
-        return sum(item.quantity for item in self.cart_cart_items.all())
+        return sum(item.quantity for item in self.cart_items.all())
 
     @property
     def total_discount(self):
         """Soma de todos os descontos aplicados (ex: pacotes de atacado)"""
-        return sum(item.discount for item in self.cart_cart_items.all())
-
-    @property
-    def total_price_with_discount(self):
-        """
-        Calcula o valor final: (Total - Descontos) + Taxa de 5%.
-        """
-        total = self.total_price - self.total_discount
-
-        # Adicionando os 5% de taxa de forma simplificada
-        total_com_taxa = total * Decimal('1.05')
-
-        # Arredonda para duas casas decimais financeiras
-        return total_com_taxa.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        return sum(item.discount for item in self.cart_items.all())
 
     def gerar_pedido(self, client=None, payment_method='pix', observations=""):
 
@@ -73,11 +60,11 @@ class Cart(models.Model):
 
             novo_pedido = OrderSale.objects.create(
                 client=cliente_final,
-                status=OrderSale.Status.PAID,
+                status=OrderSale.Status.PENDING,
                 payment_method=payment_method,
                 observations=observations,
                 total_quantity=self.total_quantity,
-                total_value=self.total_price_with_discount
+                total_value=self.total_price
             )
 
             order_cart_items_batch = []
@@ -103,7 +90,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(
-        Cart, on_delete=models.CASCADE, related_name='cart_cart_items', verbose_name="Carrinho"
+        Cart, on_delete=models.CASCADE, related_name='cart_items', verbose_name="Carrinho"
     )
     product = models.ForeignKey(
         Product,

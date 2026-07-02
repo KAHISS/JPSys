@@ -43,15 +43,15 @@ def update_cart(request):
 
         print("ola efewfwe")
         product = get_object_or_404(Product, id=product_id)
-        print("ola efewfwe")
+
         cart, created = Cart.objects.get_or_create(user=request.user)
-        print(product)
+
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             defaults={'quantity': 1}
         )
-  
+
         if item_created:
             nova_quantidade = 1
         else:
@@ -68,7 +68,7 @@ def update_cart(request):
 
         if cart_item.quantity <= 0:
             deleted = True
-            
+
             cart_item.delete()
         else:
             deleted = False
@@ -92,10 +92,25 @@ def update_cart(request):
 
 
 @login_required(login_url='users:login')
+def deleteCartItem(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Requisição invalida")
+        redirect('catalog:cart')
+
+    cart_item = CartItem.objects.get(id=pk)
+
+    cart_item.delete()
+
+    messages.success(request, "Item deletado com sucesso")
+
+    return redirect("catalog:cart")
+
+
+@login_required(login_url='users:login')
 def checkout_cart(request):
     if request.method != 'POST':
         messages.error(request, "Acesso inválido.")
-        return redirect('sales:cart')
+        return redirect('catalog:cart')
 
     cart = get_object_or_404(Cart, user=request.user)
 
@@ -109,8 +124,7 @@ def checkout_cart(request):
     if request.user.is_superuser or request.user.is_staff:
         client_id = request.POST.get('client_id')
         if client_id:
-            cliente_venda = User.objects.filter(
-                id=client_id).first() or request.user
+            cliente_venda = User.objects.get(id=client_id)
 
     # 2. Tenta gerar o pedido usando a inteligência do nosso Model!
     try:
@@ -122,14 +136,14 @@ def checkout_cart(request):
 
         messages.success(
             request, f'Pedido #{novo_pedido.id} gerado com sucesso!')
-        return redirect('sales:order_sale_detail', pk=novo_pedido.id)
+        return redirect('sales:order_resume', pk=novo_pedido.id)
 
     except ValueError as e:
         # Cai aqui se o carrinho estiver vazio ou se der erro de estoque insuficiente
         messages.error(request, str(e))
-        return redirect('sales:cart')
+        return redirect('catalog:cart')
 
     except Exception as e:
         messages.error(
             request, f"Erro inesperado ao processar a compra: {str(e)}")
-        return redirect('sales:cart')
+        return redirect('catalog:cart')

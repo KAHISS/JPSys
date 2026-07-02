@@ -49,21 +49,31 @@ class OrderSale(models.Model):
         return f"Pedido #{self.id} - {self.client.get_full_name() or self.client.username}"
 
     def save(self, *args, **kwargs):
+        # Verifica se o pedido está sendo criado agora (não tem ID ainda)
+        is_new = self.pk is None
+
+        # Salva o pedido primeiro
         super().save(*args, **kwargs)
 
-        dados_itens = self.items.aggregate(
-            total_qtd=models.Sum('quantity'),
-            total_value=models.Sum(models.F('quantity')
-                                   * models.F('unit_price'))
-        )
+        # Só recalculamos os totais se o pedido NÃO for novo.
+        # Se for novo, confiamos nos totais que já vieram preenchidos no objects.create()
+        # do carrinho, porque os OrderItems só serão criados depois via bulk_create.
+        if not is_new:
+            dados_itens = self.items.aggregate(
+                total_qtd=models.Sum('quantity'),
+                total_value=models.Sum(
+                    models.F('quantity') * models.F('unit_price'))
+            )
 
-        new_qtd = dados_itens.get('total_qtd') or 0
-        new_value = dados_itens.get('total_value') or 0.00
+            # Se a query vier vazia, o get() retorna None. O "or 0" converte para zero
+            # e impede o erro de "null value" no banco de dados.
+            new_qtd = dados_itens.get('total_qtd') or 0
+            new_value = dados_itens.get('total_value') or Decimal('0.00')
 
-        if self.total_quantity != new_qtd or self.total_value != new_value:
-            self.total_quantity = new_qtd
-            self.total_value = new_value
-            super().save(update_fields=['total_quantity', 'total_value'])
+            if self.total_quantity != new_qtd or self.total_value != new_value:
+                self.total_quantity = new_qtd
+                self.total_value = new_value
+                super().save(update_fields=['total_quantity', 'total_value'])
 
 
 class OrderItem(models.Model):

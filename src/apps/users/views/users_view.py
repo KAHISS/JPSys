@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model
 from apps.users.forms import CustomUserCreationForm, CustomUserChangeForm, AdminSetPasswordForm
 from utils.pagination import make_pagination
 from apps.users.filters import UserFilter
+from django.http import JsonResponse
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -124,7 +126,8 @@ def user_form_view(request, pk=None):
 @login_required(login_url='users:login', redirect_field_name="next")
 def admin_reset_password_view(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, "Acesso negado. Apenas administradores podem redefinir senhas.")
+        messages.error(
+            request, "Acesso negado. Apenas administradores podem redefinir senhas.")
         return redirect('inventory:promoter_inventory_list')
 
     # Busca o usuário que vai ter a senha alterada (ex: o Promotor)
@@ -133,14 +136,16 @@ def admin_reset_password_view(request, pk):
     if request.method == 'POST':
         # O SetPasswordForm pede o usuário alvo e os dados digitados
         form = AdminSetPasswordForm(target_user, request.POST)
-        
+
         if form.is_valid():
             form.save()
-            messages.success(request, f'A senha de {target_user.first_name} foi redefinida com sucesso!')
+            messages.success(
+                request, f'A senha de {target_user.first_name} foi redefinida com sucesso!')
             # Redireciona de volta para a lista de usuários/promotores
-            return redirect('users:users_list') 
+            return redirect('users:users_list')
         else:
-            messages.error(request, 'Erro ao redefinir a senha. Verifique os dados.')
+            messages.error(
+                request, 'Erro ao redefinir a senha. Verifique os dados.')
     else:
         form = AdminSetPasswordForm(target_user)
 
@@ -150,5 +155,36 @@ def admin_reset_password_view(request, pk):
         'title': f'Redefinir Senha: {target_user.first_name}',
         'promoter_inventory_active': 'bg-amber-500 text-black font-semibold',
     }
-    
+
     return render(request, 'users/pages/alter_password.html', context)
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def get_clients_search(request):
+    # Verifica se é superuser e se existe requisição GET
+    if not request.user.is_superuser or not request.GET:
+        return JsonResponse({'results': []})
+
+    query = request.GET.get('q', '')
+
+    if not query:
+        return JsonResponse({'results': []})
+
+    # Filtra apenas clientes e busca por username, first_name ou phone
+    clients = User.objects.filter(type__in=[User.Type.CLIENT, User.Type.PROMOTER]).filter(
+        Q(username__icontains=query) |
+        Q(first_name__icontains=query) |
+        Q(phone__icontains=query)
+    )[:10]
+
+    results = []
+
+    for client in clients:
+        results.append({
+            'id': client.id,
+            'name': client.get_full_name() or client.username,
+            'phone': client.phone or "Sem telefone",
+            'document': client.document or "Sem documento"
+        })
+
+    return JsonResponse({'results': results})
