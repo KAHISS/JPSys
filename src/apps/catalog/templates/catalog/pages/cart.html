@@ -42,6 +42,11 @@
                 <a href="{% url 'sales:orders_sales_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
                     <i class="fas fa-box w-5 text-center text-zinc-500"></i> Meus Pedidos
                 </a>
+                {% if user.is_superuser %}
+                    <a href="{% url 'users:users_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                        <i class="fas fa-shield-alt w-5 text-center text-zinc-500"></i> Painel Administrativo
+                    </a>
+                {% endif %}
                 <form action="{% url 'users:logout' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="username" value="{{ user.username }}">
