@@ -16,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-substitua-isso-no-env')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-ALLOWED_HOSTS.append("192.168.1.108")
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -109,9 +109,7 @@ MESSAGE_TAGS = {
     constants.ERROR: 'bg-red-50 text-red-800 border-red-500',
 }
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://atacadinhocristao.cloud',
-    'https://www.atacadinhocristao.cloud',
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
     'http://localhost',
     'http://127.0.0.1',
-]
+])

@@ -59,3 +59,26 @@ WORKDIR /app
 ENTRYPOINT ["./entrypoint.sh"]
 
 CMD ["python", "src/manage.py", "runserver", "0.0.0.0:8000"]
+
+################################################################################
+
+FROM debian:trixie-slim AS production
+
+ENV PYTHONUNBUFFERED=1
+
+RUN groupadd --gid 1000 python \
+  && useradd --uid 1000 --gid python --shell /bin/bash --create-home python ;
+
+COPY --from=builder --chown=python:python /python /python
+COPY --from=builder --chown=python:python /app /app
+
+RUN chmod +x /app/entrypoint.sh
+
+ENV PATH="/app/.venv/bin:${PATH}"
+
+USER python
+WORKDIR /app
+ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["gunicorn", "--chdir", "src", "--bind", "0.0.0.0:8000", "--workers", "3", \
+     "--access-logfile", "-", "--error-logfile", "-", "core.wsgi:application"]
