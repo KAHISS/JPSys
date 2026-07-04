@@ -66,6 +66,9 @@ def update_cart(request):
         cart_item.quantity = nova_quantidade
         cart_item_id = cart_item.id
 
+        unit_price = product.sale_price if cart_item.quantity < product.wholesale_min_quantity else product.wholesale_price
+        discount = True if cart_item.quantity >= product.wholesale_min_quantity else False
+
         if cart_item.quantity <= 0:
             deleted = True
 
@@ -80,6 +83,8 @@ def update_cart(request):
             'message': f'{quantity}x {product.description} adicionado ao carrinho!',
             'cart_total_quantity': cart.total_quantity,
             'cart_total_price': f'{cart.total_price:,.2f}',
+            'unit_price': unit_price,
+            'discount': discount,
             'cart_item': {
                 'id': cart_item_id,
                 'quantity': cart_item.quantity,

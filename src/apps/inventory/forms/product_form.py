@@ -7,13 +7,16 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'barcode', 'type', 'category', 'description',
-            'average_cost', 'sale_price', 'stock_quantity', 'image'
+            'average_cost', 'sale_price', 'wholesale_price', 'wholesale_min_quantity',
+            'stock_quantity', 'image'
         ]
         widgets = {
             'barcode': forms.TextInput(attrs={'placeholder': 'Ex: 1234567890123'}),
             'description': forms.TextInput(attrs={'placeholder': 'Ex: Capinha de celular resistente'}),
             'average_cost': forms.NumberInput(attrs={'placeholder': '0.00'}),
             'sale_price': forms.NumberInput(attrs={'placeholder': '0.00'}),
+            'wholesale_price': forms.NumberInput(attrs={'placeholder': '0.00'}),
+            'wholesale_min_quantity': forms.NumberInput(attrs={'placeholder': '5'}),
             'stock_quantity': forms.NumberInput(attrs={'placeholder': '0'}),
         }
 
@@ -29,3 +32,5 @@ class ProductForm(forms.ModelForm):
                 field.widget.attrs['class'] = file_class
             else:
                 field.widget.attrs['class'] = default_class
+
+

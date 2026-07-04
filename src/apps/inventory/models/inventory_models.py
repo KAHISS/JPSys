@@ -33,6 +33,10 @@ class Product(models.Model):
         "Custo médio", max_digits=10, decimal_places=2, blank=True, null=True)
     sale_price = models.DecimalField(
         "Preço de venda", max_digits=10, decimal_places=2, blank=True, null=True)
+    wholesale_price = models.DecimalField(
+        "Preço de atacado", max_digits=10, decimal_places=2, blank=True, null=True)
+    wholesale_min_quantity = models.PositiveIntegerField(
+        "Quantidade mínima para atacado", default=5)
     stock_quantity = models.PositiveIntegerField(
         "Quantidade em estoque", default=0)
     image = models.ImageField(
@@ -69,3 +73,5 @@ class PromoterStock(models.Model):
 
     def __str__(self):
         return f"{self.promoter.username} - {self.product.description} ({self.quantity})"
+
+

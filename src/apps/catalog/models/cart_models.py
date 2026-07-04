@@ -111,9 +111,10 @@ class CartItem(models.Model):
     @property
     def subtotal(self):
         """Valor bruto (Qtd * Preço de Venda)"""
-        if hasattr(self.product, 'sale_price') and self.product.sale_price:
-            return self.product.sale_price * self.quantity
-        return Decimal('0.00')
+        if self.quantity < self.product.wholesale_min_quantity:
+            return (self.product.sale_price or Decimal('0.00')) * self.quantity
+        else:
+            return (self.product.wholesale_price or Decimal('0.00')) * self.quantity
 
     def save(self, *args, **kwargs):
         if self.quantity < 1:

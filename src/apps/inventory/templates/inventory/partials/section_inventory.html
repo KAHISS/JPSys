@@ -75,6 +75,8 @@
                         <th class="p-4 text-xs font-semibold text-white uppercase tracking-wider text-center">Quantidade</th>
                         <th class="p-4 text-xs font-semibold text-white uppercase tracking-wider">Custo médio</th>
                         <th class="p-4 text-xs font-semibold text-white uppercase tracking-wider text-right">Preço de venda</th>
+                        <th class="p-4 text-xs font-semibold text-white uppercase tracking-wider text-right">Preço de atacado</th>
+                        <th class="p-4 text-xs font-semibold text-white uppercase tracking-wider text-center">Qtd. mín. atacado</th>
                         <th class="p-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider text-center">Ações</th>
                     </tr>
                 </thead>
@@ -83,7 +85,7 @@
                         {% include 'inventory/partials/row_product.html'%}
                     {% empty %}
                         <tr>
-                            <td colspan="7" class="p-4 text-center text-zinc-500">Nenhum produto encontrado.</td>
+                            <td colspan="9" class="p-4 text-center text-zinc-500">Nenhum produto encontrado.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -94,3 +96,4 @@
 
 </section>    
 {% include 'inventory/partials/modal.html' %}
+

@@ -80,7 +80,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Venda</label>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Venda (Varejo)</label>
                     <div class="relative">
                         {{ form.sale_price }}
                     </div>
@@ -90,6 +90,18 @@
                     <label class="block text-sm font-medium mb-1 text-gray-200">Quantidade em estoque</label>
                     {{ form.stock_quantity }}
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Preço de Atacado</label>
+                    <div class="relative">
+                        {{ form.wholesale_price }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-200">Quantidade Mínima para Atacado</label>
+                    {{ form.wholesale_min_quantity }}
+                </div>
             </div>
         </div>
 
@@ -98,3 +110,4 @@
         </button>
     </form>
 </section>
+

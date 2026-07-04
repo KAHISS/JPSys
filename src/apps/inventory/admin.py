@@ -18,7 +18,8 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("id", "description", "type", "category",
-                    "stock_quantity", "average_cost", "sale_price")
+                    "stock_quantity", "average_cost", "sale_price",
+                    "wholesale_price", "wholesale_min_quantity")
     search_fields = ("name", "category__name", "type", "barcode")
     list_filter = ("category", "type", "created_at", "updated_at")
     list_display_links = ("id", "description")
@@ -36,3 +37,5 @@ class PromoterStockAdmin(admin.ModelAdmin):
     class Meta:
         verbose_name = "Estoque da promotora"
         verbose_name_plural = "Estoques das Promotoras"
+
+
