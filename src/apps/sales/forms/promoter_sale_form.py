@@ -6,14 +6,10 @@ class PromoterSaleForm(forms.ModelForm):
     class Meta:
         model = ChipSale
         fields = [
-            'iccid', 'service',
-            'customer_name', 'customer_cpf', 'customer_birth_date'
+            'iccid', 'service'
         ]
         widgets = {
             'iccid': forms.TextInput(attrs={'placeholder': 'Bipe ou digite o código do chip'}),
-            'customer_name': forms.TextInput(attrs={'placeholder': 'Ex: João da Silva'}),
-            'customer_cpf': forms.TextInput(attrs={'placeholder': '000.000.000-00', 'maxlength': '14'}),
-            'customer_birth_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):

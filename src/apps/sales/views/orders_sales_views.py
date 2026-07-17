@@ -163,6 +163,11 @@ def delete_order_item(request, pk):
     try:
         item.product.stock_quantity += item.quantity
         item.product.save()
+
+        item.order.total_value -= item.subtotal
+        item.order.total_quantity -= item.quantity
+        item.order.save()
+
         item.delete()
         messages.success(
             request, f"Item '{item.product.description}' removido do pedido com sucesso!")
@@ -212,12 +217,15 @@ def add_order_item(request, pk):
     try:
         product = Product.objects.get(id=product_id)
 
-        OrderItem.objects.create(
+        item, created = OrderItem.objects.get_or_create(
             order=order,
             product=product,
-            quantity=int(quantity),
-            unit_price=product.sale_price
+            defaults={'quantity': quantity, 'subtotal': product.sale_price * int(quantity)}
         )
+
+        if not created:
+            item.quantity += int(quantity)
+            item.save()
 
         messages.success(
             request, f"Produto '{product.description}' adicionado ao pedido com sucesso!")

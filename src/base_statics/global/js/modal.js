@@ -167,26 +167,13 @@ function openSaleDetailsModal(button) {
     document.getElementById('modal-sale-total').textContent = `R$ ${data.total}`;
     
     // LÓGICA DO CLIENTE E CADASTRO
-    const clientSection = document.getElementById('client-data-section');
-    const noClientMsg = document.getElementById('no-client-data-msg');
     const serviceBadge = document.getElementById('modal-sale-service-badge');
 
     if (data.service === 'True') {
-        // Se teve cadastro: Mostra os dados do cliente
-        clientSection.classList.remove('hidden');
-        noClientMsg.classList.add('hidden');
-        
-        document.getElementById('modal-sale-customer-name').textContent = data.customer || 'Nome não preenchido';
-        document.getElementById('modal-sale-customer-cpf').textContent = data.cpf || '-';
-        
         // Estilo da badge
         serviceBadge.textContent = 'SIM';
         serviceBadge.className = 'ml-1 text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded';
     } else {
-        // Se NÃO teve cadastro: Esconde a div inteira do cliente
-        clientSection.classList.add('hidden');
-        noClientMsg.classList.remove('hidden');
-        
         // Estilo da badge
         serviceBadge.textContent = 'NÃO';
         serviceBadge.className = 'ml-1 text-[9px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded';

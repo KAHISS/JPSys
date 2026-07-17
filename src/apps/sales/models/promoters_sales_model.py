@@ -34,12 +34,6 @@ class ChipSale(models.Model):
     )
 
     service = models.BooleanField("Teve cadastro?", default=False)
-    customer_name = models.CharField(
-        "Nome completo do cliente", max_length=255, blank=True, default=None, null=True)
-    customer_cpf = models.CharField(
-        "CPF do cliente", max_length=14, help_text="Ex: 000.000.000-00", blank=True, default=None, null=True)
-    customer_birth_date = models.DateField(
-        "Data de nascimento", blank=True, default=None, null=True)
     price_sold = models.DecimalField(
         "Valor do Chip na venda", max_digits=10, decimal_places=2)
     service_fee_sold = models.DecimalField(

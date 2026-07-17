@@ -10,7 +10,7 @@
         <div class="mt-auto pt-4 border-t border-zinc-800/80">
             <div class="flex items-end justify-between" id="{{ product.id }}">
                 {% csrf_token %}
-                {% if product.type == "chip" %}
+                {% if product.type == "chip" and not user.is_superuser %}
                     <div class="flex gap-4 w-full">
                         <a href="https://wa.me/5577981401970?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20o%20chip%20%7B{{ product.description }}%7D" class="flex gap-2 h-10 w-full rounded-lg bg-zinc-800 border border-3 border-green-700 flex items-center justify-center text-green-400 hover:text-amber-500 hover:border-amber-500/50 transition-all" target="_blank" title="Saiba mais sobre o chip">
                             <i class="fab fa-whatsapp"></i> <span>Saiba mais</span>

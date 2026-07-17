@@ -1,4 +1,4 @@
-from django.db.models import Sum, Count, Case, When, F, DecimalField, Q, ExpressionWrapper
+from django.db.models import Sum, Count, Case, When, F, DecimalField, Q, Value
 
 
 def get_promoters_sales_metrics(filtered_queryset):
@@ -14,13 +14,10 @@ def get_promoters_sales_metrics(filtered_queryset):
             )
         ),
         total_commission_sum=Sum(
-            ExpressionWrapper(
-                Case(
-                    When(service=True, then=F('price_sold') +
-                         F('service_fee_sold')),
-                    default=F('price_sold')
-                ) * (F('promoter__comission') / 100.0),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
+            F('promoter__comission') + Case(
+                When(service=True, then=Value(2.00)),
+                default=Value(0.00),
+                output_field=DecimalField()
             )
         )
     )

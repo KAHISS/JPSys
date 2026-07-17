@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const displayPrice = document.getElementById('display-price');
     const displayFee = document.getElementById('display-fee');
     const displayTotal = document.getElementById('display-total');
-    const clientDataSection = document.getElementById('client-data-section');
 
     // Variáveis para guardar os valores do chip selecionado atualmente
     let currentPrice = 0;
@@ -26,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             // Faz a requisição AJAX usando a url que criamos no passo 2
-            const response = await fetch(`/sales/stock-price/?stock_id=${stockId}`);
+            const response = await fetch(`/sales/promoters/stock-price/?stock_id=${stockId}`);
             const data = await response.json();
             
             if (data.success) {
@@ -57,22 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
             displayFee.textContent = `R$ ${currentFee.toFixed(2).replace('.', ',')}`;
             total += currentFee;
             
-            // Mostra os dados do cliente
-            clientDataSection.classList.remove('hidden');
-            setTimeout(() => {
-                clientDataSection.classList.add('opacity-100');
-                clientDataSection.classList.remove('opacity-0');
-            }, 10);
         } else {
             // Zera a taxa visualmente
             displayFee.textContent = `R$ 0,00`;
-            
-            // Esconde os dados do cliente
-            clientDataSection.classList.add('opacity-0');
-            clientDataSection.classList.remove('opacity-100');
-            setTimeout(() => {
-                clientDataSection.classList.add('hidden');
-            }, 300);
         }
 
         // Mostra o Total Geral
