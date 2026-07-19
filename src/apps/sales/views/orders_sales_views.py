@@ -144,6 +144,7 @@ def update_order_item(request, pk):
 
     try:
         item.quantity = int(new_quantity)
+        item.unit_price = item.product.sale_price if item.quantity < item.product.wholesale_min_quantity else item.product.wholesale_price
         messages.success(
             request, f"Quantidade do item '{item.product.description}' atualizada para {item.quantity}")
         item.save()
@@ -152,29 +153,28 @@ def update_order_item(request, pk):
 
     return redirect("sales:order_resume", order)
 
+
 @login_required(login_url='users:login', redirect_field_name='next')
 def delete_order_item(request, pk):
     if not request.user.is_superuser or not request.POST:
         raise Http404("Você não tem permissão para alterar os itens do pedido")
 
     item = OrderItem.objects.get(id=pk)
-    order = request.POST.get("order")
+    orderId = request.POST.get("order")
+    order = get_object_or_404(OrderSale, id=int(orderId))
 
     try:
         item.product.stock_quantity += item.quantity
         item.product.save()
 
-        item.order.total_value -= item.subtotal
-        item.order.total_quantity -= item.quantity
-        item.order.save()
-
         item.delete()
+        order.save()
         messages.success(
             request, f"Item '{item.product.description}' removido do pedido com sucesso!")
     except Exception as e:
         messages.error(request, f"Erro ao remover item do pedido {e}")
 
-    return redirect("sales:order_resume", order)
+    return redirect("sales:order_resume", orderId)
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
@@ -192,7 +192,7 @@ def get_products_search(request):
     )[:10]
 
     results = []
-    
+
     for prod in products:
         results.append({
             'id': prod.id,
@@ -220,11 +220,13 @@ def add_order_item(request, pk):
         item, created = OrderItem.objects.get_or_create(
             order=order,
             product=product,
-            defaults={'quantity': quantity, 'subtotal': product.sale_price * int(quantity)}
+            defaults={'quantity': int(quantity),
+                      'unit_price': product.sale_price if int(quantity) < product.wholesale_min_quantity else product.wholesale_price}
         )
 
         if not created:
             item.quantity += int(quantity)
+            item.unit_price = product.sale_price if item.quantity < product.wholesale_min_quantity else product.wholesale_price
             item.save()
 
         messages.success(

@@ -34,8 +34,8 @@ class Cart(models.Model):
         """Soma de todos os descontos aplicados (ex: pacotes de atacado)"""
         return sum(item.discount for item in self.cart_items.all())
 
-    def gerar_pedido(self, client=None, payment_method='pix', observations=""):
-
+    def gerar_pedido(self, client=None, payment_method='pix', observations="", return_at=None):
+        print(return_at, "aqui é o return_at")
         if not self.cart_items.exists():
             raise ValueError("O carrinho está vazio.")
 
@@ -63,14 +63,14 @@ class Cart(models.Model):
                 status=OrderSale.Status.PENDING,
                 payment_method=payment_method,
                 observations=observations,
+                return_at=return_at,
                 total_quantity=self.total_quantity,
                 total_value=self.total_price
             )
 
             order_cart_items_batch = []
             for item in self.cart_items.all():
-                preco_unit = item.product.sale_price if item.product.sale_price else Decimal(
-                    '0.00')
+                preco_unit = item.product.sale_price if item.quantity < item.product.wholesale_min_quantity else item.product.wholesale_price
                 order_cart_items_batch.append(
                     OrderItem(
                         order=novo_pedido,

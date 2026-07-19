@@ -18,6 +18,14 @@
         </div>
     </td>
 
+    <td class="p-4">
+        {% if order.return_at %}
+            <p class="text-sm font-medium text-zinc-200 text-center">{{ order.return_at|date:"d/m/Y" }}</p>
+        {% else %}
+            <p class="text-sm font-medium text-zinc-500 text-center">Não definido</p>
+        {% endif %}
+    </td>
+
     <td class="p-4 text-center">
         {% if order.status == 'pending' %}
             <span class="inline-flex items-center justify-center px-2.5 py-1 bg-amber-500/10 text-amber-500 text-xs font-bold rounded-md border border-amber-500/20">

@@ -123,6 +123,9 @@ def checkout_cart(request):
     payment_method = request.POST.get(
         'payment_method', OrderSale.PaymentMethod.PIX)
     observations = request.POST.get('observations', '')
+    return_at = request.POST.get('return_at', None)
+    if return_at == '':
+        return_at = None
 
     # Se for Admin, verifica se ele escolheu outro cliente para a venda
     cliente_venda = request.user
@@ -136,7 +139,8 @@ def checkout_cart(request):
         novo_pedido = cart.gerar_pedido(
             client=cliente_venda,
             payment_method=payment_method,
-            observations=observations
+            observations=observations,
+            return_at=return_at
         )
 
         messages.success(

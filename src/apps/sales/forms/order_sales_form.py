@@ -6,13 +6,20 @@ class OrderSaleForm(forms.ModelForm):
     class Meta:
         model = OrderSale
         fields = [
-            'client', 'status', 'observations', 'payment_method'
+            'client', 'status', 'observations', 'payment_method', 'return_at'
         ]
         widgets = {
             'observations': forms.Textarea(attrs={
                 'rows': 4,
                 'placeholder': 'Adicione observações ou detalhes sobre o andamento do pedido...'
             }),
+            'return_at': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'type': 'date',
+                    'placeholder': 'Selecione a data de retorno do pedido'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):

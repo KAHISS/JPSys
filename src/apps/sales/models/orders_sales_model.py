@@ -44,6 +44,8 @@ class OrderSale(models.Model):
         "Value total", max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    return_at = models.DateField(
+        "Data de Retorno", blank=True, null=True, default=None)
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.client.get_full_name() or self.client.username}"
