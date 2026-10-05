@@ -32,7 +32,8 @@ FROM debian:trixie-slim AS development
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends build-essential \
+  && apt-get install -y --no-install-recommends build-essential ca-certificates \
+  && update-ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* ;
 
@@ -66,6 +67,12 @@ FROM debian:trixie-slim AS production
 
 ENV PYTHONUNBUFFERED=1
 
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates \
+  && update-ca-certificates \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* ;
+
 RUN groupadd --gid 1000 python \
   && useradd --uid 1000 --gid python --shell /bin/bash --create-home python ;
 
@@ -81,4 +88,4 @@ WORKDIR /app
 ENTRYPOINT ["./entrypoint.sh"]
 
 CMD ["gunicorn", "--chdir", "src", "--bind", "0.0.0.0:8000", "--workers", "3", \
-     "--access-logfile", "-", "--error-logfile", "-", "core.wsgi:application"]
+"--access-logfile", "-", "--error-logfile", "-", "core.wsgi:application"]

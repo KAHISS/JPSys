@@ -5,7 +5,10 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from apps.users.forms import CustomUserCreationForm, CustomUserChangeForm, AdminSetPasswordForm
+from apps.users.forms.address_form import AddressForm
+from apps.users.models.user_models import Address
 from utils.pagination import make_pagination
+from utils.get_page import _get_previous_page_url
 from apps.users.filters import UserFilter
 from django.http import JsonResponse
 from django.db.models import Q
@@ -47,6 +50,98 @@ def users_list(request):
         'title': 'Usuários Cadastrados',
         "page": "users"
     })
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def user_detail_view(request, pk):
+    if not request.user.is_superuser:
+        raise Http404("Você não tem permissão para acessar esta página.")
+
+    user = get_object_or_404(User, id=pk)
+    address_form = AddressForm()
+    address = getattr(user, 'address', None)
+
+    return render(request, 'users/pages/user_detail.html', {
+        'page_title': 'Detalhes do usuário',
+        'user_active': 'bg-amber-500 text-black font-semibold',
+        'page': 'users',
+        'user_detail': user,
+        'address': address,
+        'form': address_form,
+        'title': f'Detalhes do Usuário #{user.id}',
+    })
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def address_form_view(request, user_pk, pk=None):
+    user_instance = get_object_or_404(User, id=user_pk)
+    default_back_url = reverse('catalog:perfil') if user_instance.type == User.Type.CLIENT else reverse(
+        'users:user_detail', args=[user_instance.id])
+    back_url = _get_previous_page_url(request, default_back_url)
+
+    if request.method == 'POST' and 'delete' in request.POST and pk:
+        address_to_delete = get_object_or_404(
+            Address, id=pk, user=user_instance)
+        address_to_delete.delete()
+        messages.success(request, "Endereço excluído com sucesso!")
+        return redirect(back_url)
+
+    if pk:
+        address_instance = get_object_or_404(
+            Address, id=pk, user=user_instance)
+        title = f"Editar Endereço - {user_instance.username}"
+        path = f"Usuários > Endereços > Editar"
+        action = "update"
+        indentifier = address_instance.id
+        form = AddressForm(request.POST or None, instance=address_instance)
+    else:
+        address_instance = None
+        title = f"Novo Endereço - {user_instance.username}"
+        path = f"Usuários > Endereços > Novo"
+        action = "create"
+        indentifier = None
+        form = AddressForm(request.POST or None)
+
+    if request.method == 'POST' and not 'delete' in request.POST:
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = user_instance
+            address.save()
+
+            messages.success(
+                request, f"Endereço {'atualizado' if pk else 'registrado'} com sucesso!")
+            return redirect(back_url)
+        else:
+            messages.error(
+                request, "Erro ao processar o formulário. Verifique os dados fornecidos.")
+
+    return render(request, 'users/pages/user_detail.html', context={
+        "section": "users",
+        "form": form,
+        "title": title,
+        "path": path,
+        "action": action,
+        "indentifier": indentifier,
+        "back_url": back_url,
+        'user_detail': user_instance,
+        'address': getattr(user_instance, 'address', None),
+        'user_active': 'bg-amber-500 text-black font-semibold',
+        "page": "users-detail"
+    })
+
+
+@login_required(login_url='users:login', redirect_field_name='next')
+def delete_account_view(request):
+    if not request.POST:
+        raise Http404("No POST data found.")
+
+    user = request.user
+    username = user.username
+    logout_url = reverse('users:login')
+
+    user.delete()
+    messages.success(request, f'Conta de {username} excluída com sucesso!')
+    return redirect(logout_url)
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
@@ -123,25 +218,22 @@ def user_form_view(request, pk=None):
     })
 
 
-@login_required(login_url='users:login', redirect_field_name="next")
+@login_required(login_url='users:login', redirect_field_name='next')
 def admin_reset_password_view(request, pk):
     if not request.user.is_superuser:
         messages.error(
             request, "Acesso negado. Apenas administradores podem redefinir senhas.")
         return redirect('inventory:promoter_inventory_list')
 
-    # Busca o usuário que vai ter a senha alterada (ex: o Promotor)
     target_user = get_object_or_404(User, id=pk)
 
     if request.method == 'POST':
-        # O SetPasswordForm pede o usuário alvo e os dados digitados
         form = AdminSetPasswordForm(target_user, request.POST)
 
         if form.is_valid():
             form.save()
             messages.success(
                 request, f'A senha de {target_user.first_name} foi redefinida com sucesso!')
-            # Redireciona de volta para a lista de usuários/promotores
             return redirect('users:users_list')
         else:
             messages.error(
@@ -161,7 +253,6 @@ def admin_reset_password_view(request, pk):
 
 @login_required(login_url='users:login', redirect_field_name='next')
 def get_clients_search(request):
-    # Verifica se é superuser e se existe requisição GET
     if not request.user.is_superuser or not request.GET:
         return JsonResponse({'results': []})
 
@@ -170,7 +261,6 @@ def get_clients_search(request):
     if not query:
         return JsonResponse({'results': []})
 
-    # Filtra apenas clientes e busca por username, first_name ou phone
     clients = User.objects.filter(type__in=[User.Type.CLIENT, User.Type.PROMOTER]).filter(
         Q(username__icontains=query) |
         Q(first_name__icontains=query) |

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JP Acessórios | Meu Perfil</title>
     <script src="{% static 'catalog/js/search_bar.js' %}"></script>
+    <script src="{% static 'global/js/modal.js' %}"></script>
     <link rel="stylesheet" href="{% static 'catalog/css/transitions.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'global/img/favicon.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +15,7 @@
 <body class="bg-zinc-950 font-sans text-zinc-100 antialiased selection:bg-amber-500 selection:text-zinc-950">
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        
+        {% include "global/partials/messages.html" %}
         <div class="flex items-center gap-3 mb-8">
             <button onclick="window.history.back()" class="h-10 w-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 rounded-lg transition-all active:scale-95 mr-2">
                 <i class="fas fa-arrow-left text-sm"></i>
@@ -55,6 +56,14 @@
                         <a href="https://wa.me/5577981401970" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg border border-zinc-700 transition-all font-medium text-sm flex items-center justify-center gap-2">
                             <i class="fas fa-edit"></i> Solicitar Alteração
                         </a>
+                        {% if not user.is_superuser %}
+                            <form action="{% url 'users:delete_account' %}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Essa ação não poderá ser desfeita.');">
+                                {% csrf_token %}
+                                <button type="submit" class="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 border border-red-500/30 transition-all font-medium text-sm flex items-center gap-2">
+                                    <i class="fas fa-user-times"></i> Excluir conta
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -81,20 +90,106 @@
 
                 <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-lg">
                     <h4 class="text-sm font-bold text-amber-500 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-3">Endereço</h4>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-                        <div class="sm:col-span-2">
-                            <span class="block text-xs text-zinc-500 mb-1">Logradouro</span>
-                            <div class="flex items-center gap-2 text-zinc-200 font-medium">
-                                <i class="fas fa-map-marker-alt text-zinc-600 text-xs"></i>
-                                {{ user.addres|default:"Não informado" }}
+
+                    {% if user.address %}
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <span class="block text-xs text-zinc-500 mb-1">Logradouro</span>
+                                    <div class="flex items-center gap-2 text-zinc-200 font-medium">
+                                        <i class="fas fa-map-marker-alt text-zinc-600 text-xs"></i>
+                                        {{ user.address.address|default:"Não informado" }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-zinc-500 mb-1">Número</span>
+                                    <span class="text-zinc-200 font-medium">{{ user.address.number|default:"-" }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-zinc-500 mb-1">Complemento</span>
+                                    <span class="text-zinc-200 font-medium">{{ user.address.complement|default:"-" }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-zinc-500 mb-1">Bairro</span>
+                                    <span class="text-zinc-200 font-medium">{{ user.address.neighborhood|default:"-" }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-zinc-500 mb-1">Cidade</span>
+                                    <span class="text-zinc-200 font-medium">{{ user.address.city|default:"Não informada" }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-zinc-500 mb-1">CEP</span>
+                                    <span class="text-zinc-200 font-medium font-mono">{{ user.address.cep|default:"-" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3 pt-2">
+                                <button type="button"
+                                    onclick="openAddressModal(this)"
+                                    data-url="{% url 'users:address_update' user.id user.address.id %}"
+                                    data-title="Atualizar Endereço"
+                                    data-address="{{ user.address.address|default:'' }}"
+                                    data-number="{{ user.address.number|default:'' }}"
+                                    data-complement="{{ user.address.complement|default:'' }}"
+                                    data-neighborhood="{{ user.address.neighborhood|default:'' }}"
+                                    data-cep="{{ user.address.cep|default:'' }}"
+                                    data-city="{{ user.address.city|default:'' }}"
+                                    class="px-4 py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500 hover:text-zinc-950 text-amber-500 border border-amber-500/30 transition-all font-medium text-sm flex items-center gap-2">
+                                    <i class="fas fa-edit"></i> Atualizar endereço
+                                </button>
+                                <form action="{% url 'users:address_update' user.id user.address.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir seu endereço?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete" value="true">
+                                    <button type="submit" class="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-red-500 hover:text-white text-zinc-300 border border-zinc-700 transition-all font-medium text-sm flex items-center gap-2">
+                                        <i class="fas fa-trash"></i> Excluir endereço
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        <div>
-                            <span class="block text-xs text-zinc-500 mb-1">Cidade</span>
-                            <span class="text-zinc-200 font-medium">{{ user.city|default:"Não informada" }}</span>
-                        </div>
-                    </div>
+                    {% else %}
+                        <form method="POST" action="{% url 'users:address_create' user.id %}" class="space-y-4">
+                            {% csrf_token %}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_address">Logradouro</label>
+                                    {{ form.address }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_number">Número</label>
+                                    {{ form.number }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_complement">Complemento</label>
+                                    {{ form.complement }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_neighborhood">Bairro</label>
+                                    {{ form.neighborhood }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_city">Cidade</label>
+                                    {{ form.city }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-zinc-500 mb-1" for="id_cep">CEP</label>
+                                    {{ form.cep }}
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold transition-all">
+                                Salvar endereço
+                            </button>
+                        </form>
+
+                        {% if not user.is_superuser %}
+                        <form action="{% url 'users:delete_account' %}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Essa ação não poderá ser desfeita.');" class="pt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 border border-red-500/30 transition-all font-medium text-sm flex items-center gap-2">
+                                <i class="fas fa-user-times"></i> Excluir conta
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
                 </div>
 
                 {% if user.type == 'promoter' or user.comission > 0 %}
@@ -123,5 +218,6 @@
         </div>
     </main>
 
-    </body>
+    {% include "users/partials/modal_new_address.html" %}
+</body>
 </html>

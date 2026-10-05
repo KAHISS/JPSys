@@ -63,8 +63,8 @@
 
             <p class="mt-8 text-center text-sm text-gray-500">
                 Ainda não tem uma conta? 
-                <a href="https://wa.me/5577981401970" class="font-medium text-[#D4AF37] hover:text-[#C5A028] transition-colors">
-                    Contate o administrador para criar uma conta para você.
+                <a href="{% url "users:register" %}" class="font-medium text-[#D4AF37] hover:text-[#C5A028] transition-colors">
+                    Crie uma clicando aqui.
                 </a>
             </p>
         {% endif %}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirme seu email - JP Acessórios</title>
+</head>
+<body style="margin:0; padding:0; background-color:#0A0A0C; font-family: Arial, Helvetica, sans-serif;">
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0A0A0C; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background-color:#111315; border: 1px solid #27272a; border-radius: 12px; overflow: hidden;">
+
+          <!-- Header / Logo -->
+          <tr>
+            <td align="center" style="padding: 36px 32px 8px 32px;">
+              <div style="font-size: 28px; font-weight: 800; letter-spacing: 1px; color: #D4AF37; font-family: Georgia, 'Times New Roman', serif;">
+                JP ACESSÓRIOS
+              </div>
+            </td>
+          </tr>
+
+          <!-- Icon -->
+          <tr>
+            <td align="center" style="padding: 16px 32px 0 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 64px; height: 64px; background-color: rgba(212,175,55,0.1); border-radius: 999px; text-align: center; vertical-align: middle; font-size: 28px; color: #D4AF37;">
+                    ✉
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Title -->
+          <tr>
+            <td align="center" style="padding: 20px 32px 0 32px;">
+              <h1 style="margin: 0; font-size: 20px; color: #e5e5e5; font-weight: 700;">
+                Confirme seu email
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body text -->
+          <tr>
+            <td align="center" style="padding: 12px 32px 0 32px;">
+              <p style="margin: 0; font-size: 14px; line-height: 22px; color: #a1a1aa;">
+                Olá, <strong style="color:#e5e5e5;">{{ user.first_name|default:user.username }}</strong>! Falta só um passo para ativar sua conta na JP Acessórios. Clique no botão abaixo para confirmar seu email.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Button -->
+          <tr>
+            <td align="center" style="padding: 28px 32px 8px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border-radius: 8px; background-color: #D4AF37;">
+                    <a href="{{ verify_url }}" target="_blank"
+                       style="display: inline-block; padding: 14px 32px; font-size: 14px; font-weight: 700; color: #0A0A0C; text-decoration: none; border-radius: 8px;">
+                      CONFIRMAR EMAIL
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Fallback link -->
+          <tr>
+            <td align="center" style="padding: 20px 32px 0 32px;">
+              <p style="margin: 0; font-size: 12px; line-height: 18px; color: #71717a;">
+                Se o botão não funcionar, copie e cole este link no navegador:
+              </p>
+              <p style="margin: 6px 0 0 0; font-size: 12px; line-height: 18px; word-break: break-all;">
+                <a href="{{ verify_url }}" target="_blank" style="color: #D4AF37; text-decoration: underline;">{{ verify_url }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding: 28px 32px 0 32px;">
+              <div style="border-top: 1px solid #27272a;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer note -->
+          <tr>
+            <td align="center" style="padding: 20px 32px 36px 32px;">
+              <p style="margin: 0; font-size: 12px; line-height: 18px; color: #52525b;">
+                Se você não criou essa conta, pode ignorar este email com segurança.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+        <!-- Outer footer -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px;">
+          <tr>
+            <td align="center" style="padding: 20px 16px;">
+              <p style="margin: 0; font-size: 11px; color: #3f3f46;">
+                &copy; {% now "Y" %} JP Acessórios. Todos os direitos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

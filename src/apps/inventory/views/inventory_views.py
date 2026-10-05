@@ -70,7 +70,7 @@ def product_form_view(request, pk=None):
 
     if pk:
         product = get_object_or_404(Product, id=pk)
-        title = f"Editar Produto - {product.description}"
+        title = f"Editar Produto - {product.id}#"
         path = f"Estoque > Editar Produto > {product.description}"
         action = 'update'
         indentifier = product.id

@@ -11,6 +11,7 @@ from apps.inventory.forms import ProductForm
 from apps.inventory.models import Product, Category
 from apps.catalog.models import Cart
 from apps.inventory.filters import ProductFilter
+from apps.users.forms.address_form import AddressForm
 from django.db.models import Q
 import json
 
@@ -47,7 +48,6 @@ def catalog_list(request):
     categories = Category.objects.all().order_by("name")
 
     if request.user.is_authenticated:
-    # get_or_create retorna uma tupla: (objeto, foi_criado)
         cart, created = Cart.objects.get_or_create(user=request.user)
     else:
         cart = None
@@ -70,8 +70,18 @@ def catalog_list(request):
 
 
 @login_required(login_url='users:login', redirect_field_name='next')
-def perfil(request):
+def perfil_view(request):
+    address_form = AddressForm()
+
+    try:
+        address = request.user.address
+    except Exception:
+        address = None
+
     return render(request, 'catalog/pages/perfil.html', context={
         "title": "Perfil",
         "page": "perfil",
+        "user_detail": request.user,
+        "form": address_form,
+        "address": address,
     })

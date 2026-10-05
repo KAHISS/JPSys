@@ -24,9 +24,10 @@ class OrderSale(models.Model):
 
     client = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         related_name='orders_sales',
-        verbose_name="Cliente"
+        verbose_name="Cliente",
+        null=True
     )
     status = models.CharField("Status", max_length=10,
                               choices=Status.choices, default='pending')

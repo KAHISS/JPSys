@@ -1,0 +1,12 @@
+Olá, {{ user.first_name|default:user.username }}!
+
+Obrigado por se cadastrar na JP Acessórios.
+
+Para ativar sua conta, confirme seu email acessando o link abaixo:
+
+{{ verify_url }}
+
+Se você não criou essa conta, pode ignorar este email com segurança.
+
+--
+JP Acessórios

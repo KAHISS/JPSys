@@ -12,7 +12,8 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-substitua-isso-no-env')
-
+FIELD_ENCRYPTION_KEY = env(
+    'FIELD_ENCRYPTION_KEY', default="v2CkK6mox9ZHj6_IAvhwUfCViFuuz4z59nZCjwphtAg")
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
@@ -35,7 +36,8 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.promoters',
     'apps.sales',
-    'apps.catalog'
+    'apps.catalog',
+    'apps.documents'v
 ]
 
 MIDDLEWARE = [
@@ -113,3 +115,17 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
     'http://localhost',
     'http://127.0.0.1',
 ])
+
+# --- Email ---
+EMAIL_BACKEND = env(
+    'EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL',
+                         default='JP Acessórios <no-reply@jpacessorios.com>')
+
+# Necessário para montar o link absoluto de confirmação (ex: https://jpacessorios.com)
+SITE_URL = env('SITE_URL', default='http://localhost:8000')

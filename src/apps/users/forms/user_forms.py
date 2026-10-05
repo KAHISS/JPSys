@@ -12,7 +12,7 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name',
-            'type', 'document', 'phone', 'addres', 'city', 'comission'
+            'type', 'document', 'phone', 'comission'
         )
         widgets = {
             'phone': forms.TextInput(attrs={'placeholder': '(00) 00000-0000'}),
@@ -31,7 +31,7 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name',
-            'type', 'document', 'phone', 'addres', 'city', 'comission'
+            'type', 'document', 'phone', 'comission'
         )
         widgets = {
             'phone': forms.TextInput(attrs={'placeholder': '(00) 00000-0000'}),

@@ -1,0 +1,23 @@
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+    {% for field in form %}
+        <div class="space-y-1 {% if field.name == 'addres' %}md:col-span-2{% endif %}">
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-400">{{ field.label }}</label>
+            <div class="relative">
+                {{ field }}
+            </div>
+
+            {% if field.help_text %}
+                <p class="text-xs text-gray-500 mt-1">{{ field.help_text|safe }}</p>
+            {% endif %}
+
+            {% if field.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ field.errors.0 }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<button type="submit"
+    class="w-full mt-4 flex justify-center py-3 px-4 rounded-lg text-sm font-bold text-black bg-[#D4AF37] hover:bg-[#C5A028] transition-colors">
+    CRIAR CONTA
+</button>

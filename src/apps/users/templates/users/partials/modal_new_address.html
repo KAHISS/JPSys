@@ -1,0 +1,62 @@
+<!-- Modal para Criar/Editar Endereço -->
+<div id="address-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-address-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity cursor-pointer" onclick="closeAddressModal()"></div>
+
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+        <div class="relative bg-zinc-900 rounded-xl text-left overflow-hidden shadow-2xl transform transition-all duration-200 scale-95 opacity-0 sm:my-8 sm:max-w-md w-full border border-zinc-800 ring-1 ring-amber-500/20">
+            
+            <div class="px-6 py-5 border-b border-zinc-800 flex justify-between items-center bg-black/30">
+                <h3 class="text-xl font-bold text-white" id="modal-address-title">Novo Endereço</h3>
+                <button type="button" onclick="closeAddressModal()" class="text-zinc-500 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form id="form-new-address" method="POST" action="{% url 'users:address_create' user_detail.id %}">
+                {% csrf_token %}
+                <div class="px-6 py-6 space-y-4">
+                    <div>
+                        <label for="id_address" class="block text-sm font-medium mb-1 text-gray-200">Endereço *</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_number" class="block text-sm font-medium mb-1 text-gray-200">Número</label>
+                            {{ form.number }}
+                        </div>
+                        <div>
+                            <label for="id_complemento" class="block text-sm font-medium mb-1 text-gray-200">Complemento</label>
+                            {{ form.complement }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_neighborhood" class="block text-sm font-medium mb-1 text-gray-200">Bairro</label>
+                        {{ form.neighborhood }}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_cep" class="block text-sm font-medium mb-1 text-gray-200">CEP</label>
+                            {{ form.cep }}
+                        </div>
+                        <div>
+                            <label for="id_city" class="block text-sm font-medium mb-1 text-gray-200">Cidade</label>
+                            {{ form.city }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black/50 px-6 py-4 flex justify-end gap-3 border-t border-zinc-800">
+                    <button type="button" onclick="closeAddressModal()" class="text-zinc-400 hover:text-white font-medium px-4 py-2 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

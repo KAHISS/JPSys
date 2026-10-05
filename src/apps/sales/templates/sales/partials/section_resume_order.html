@@ -30,8 +30,12 @@
                     <i class="fas fa-map-marker-alt text-blue-500"></i> Dados de Entrega / Cliente
                 </h2>
                 <div class="space-y-2 text-sm text-zinc-300">
-                    <p><span class="text-zinc-500 font-medium">Endereço:</span> {{ order.client.addres|default:"Não informado" }}</p>
-                    <p><span class="text-zinc-500 font-medium">Cidade:</span> {{ order.client.city|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Endereço:</span> {{ order.client.address.address|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Número:</span> {{ order.client.address.number|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Complemento:</span> {{ order.client.address.complement|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Bairro:</span> {{ order.client.address.neighborhood|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">Cidade:</span> {{ order.client.address.city|default:"Não informado" }}</p>
+                    <p><span class="text-zinc-500 font-medium">CEP:</span> {{ order.client.address.cep|default:"Não informado" }}</p>
                     <p><span class="text-zinc-500 font-medium">Telefone:</span> {{ order.client.phone|default:"Não informado" }}</p>
                 </div>
             </div>

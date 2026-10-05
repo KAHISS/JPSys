@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JP Acessórios | {{ document.title|default:"Documento" }}</title>
+    <script src="{% static "catalog/js/search_bar.js" %}" defer></script>
+    <script src="{% static "catalog/js/sidebar.js" %}" defer></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'global/img/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static "catalog/css/transitions.css" %}">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .prose-custom h1, .prose-custom h2, .prose-custom h3 {
+            color: #f4f4f5; /* zinc-100 */
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .prose-custom p {
+            margin-bottom: 1rem;
+            color: #d4d4d8; /* zinc-300 */
+            line-height: 1.6;
+        }
+        .prose-custom ul, .prose-custom ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #d4d4d8;
+        }
+        .prose-custom ul {
+            list-style-type: disc;
+        }
+        .prose-custom ol {
+            list-style-type: decimal;
+        }
+        .prose-custom a {
+            color: #f59e0b; /* amber-500 */
+            text-decoration: underline;
+        }
+        .prose-custom a:hover {
+            color: #fbbf24; /* amber-400 */
+        }
+        .prose-custom strong {
+            color: #f4f4f5;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 font-sans text-zinc-100 antialiased selection:bg-amber-500 selection:text-zinc-950 flex flex-col min-h-screen">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
+
+    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-72 bg-zinc-900 border-r border-zinc-800 z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col md:hidden shadow-2xl">
+        <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800">
+            <div class="flex items-center cursor-pointer">
+                <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
+                <span class="text-amber-500 font-serif font-bold text-xl tracking-wider">JP</span>
+            </div>
+            <button id="closeSidebarBtn" class="text-zinc-500 hover:text-amber-500 transition-colors h-8 w-8 flex items-center justify-center bg-zinc-950 rounded border border-zinc-800">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2 no-scrollbar">
+            <a href="{% url 'catalog:catalog_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                <i class="fas fa-home w-5 text-center text-zinc-500"></i> Início
+            </a>
+            
+            <div class="my-4 border-t border-zinc-800/50"></div>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'catalog:perfil' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                    <i class="fas fa-user w-5 text-center text-zinc-500"></i> Minha Conta
+                </a>
+                <a href="{% url 'sales:orders_sales_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                    <i class="fas fa-box w-5 text-center text-zinc-500"></i> Meus Pedidos
+                </a>
+                {% if user.is_superuser %}
+                    <a href="{% url 'users:users_list' %}" class="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800/50 hover:text-amber-500 rounded-lg transition-colors font-medium">
+                        <i class="fas fa-shield-alt w-5 text-center text-zinc-500"></i> Painel Administrativo
+                    </a>
+                {% endif %}
+                <form action="{% url "users:logout" %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="username" value="{{ user.username }}">
+                    <button type="submit" class="w-full flex items-center space-x-3 p-3 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-200 font-medium">
+                        <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                        <span>Sair do Sistema</span>
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="flex items-center gap-3 px-4 py-3 mt-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-zinc-950 border border-amber-500/30 rounded-lg transition-all font-medium group">
+                    <i class="fas fa-sign-in-alt w-5 text-center group-hover:scale-110 transition-transform"></i> Fazer Login
+                </a>
+            {% endif %}
+        </nav>
+
+        <div class="p-6 border-t border-zinc-800 bg-zinc-950/50">
+            <a href="#" class="flex items-center gap-2 justify-center w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-green-400 hover:text-green-300 rounded-lg transition-colors font-medium border border-zinc-700">
+                <i class="fab fa-whatsapp text-lg"></i> Atendimento
+            </a>
+        </div>
+    </aside>
+
+    <!-- Navegação / Cabeçalho -->
+    <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="header">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer group">
+                    <div class="text-2xl font-serif font-bold tracking-wider group-hover:scale-105 transition-transform flex items-center group">
+                        <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
+                        <a href="{% url "catalog:catalog_list" %}">
+                            <span class="text-amber-500">JP</span><span class="text-white text-lg ml-1">Acessórios</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Barra de Pesquisa (Desktop) -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <form method="GET" action="{% url "catalog:catalog_list" %}" class="relative w-full max-w-md mx-auto">      
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-zinc-500 text-sm"></i>
+                        </div>   
+                        <input type="text" name="q" id="desktopSearchInput" placeholder="Buscar nome ou código de um produto..." 
+                            class="block w-full pl-11 pr-10 py-3 border border-zinc-800 rounded-lg leading-5 bg-zinc-950 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm shadow-inner">        
+                    </form>
+                </div>
+
+                <!-- Barra de Pesquisa (Mobile) -->
+                <div id="mobileSearchBar" class="hidden absolute top-20 left-0 w-full px-4 pb-4 bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 md:hidden z-40 origin-top transition-all duration-300 transform scale-y-0 opacity-0">
+                    <form method="GET" action="{% url "catalog:catalog_list" %}" class="relative w-full max-w-md mx-auto">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-zinc-500 text-sm"></i>
+                        </div>
+                        <input type="text" name="q" id="mobileSearchInput" placeholder="Buscar nome ou código de um produto... " 
+                            class="block w-full pl-11 pr-10 py-3 border border-zinc-800 rounded-lg leading-5 bg-zinc-950 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm shadow-inner">
+                        <button type="button" id="closeMobileSearchBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-amber-500 transition-colors">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Ícones de Ação -->
+                <div class="flex items-center gap-4 sm:gap-5">
+                    <button id="mobileMenuBtn" class="text-zinc-400 hover:text-amber-500 transition-colors md:hidden">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <button id="mobileSearchBtn" class="text-zinc-400 hover:text-amber-500 transition-colors md:hidden">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <a href="{% url 'users:users_list' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Painel Administrativo">
+                                <i class="fas fa-shield-alt text-lg"></i>
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'sales:orders_sales_list' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Meus Pedidos">
+                            <i class="fas fa-box text-lg"></i>
+                        </a>
+                        <a href="{% url 'catalog:perfil' %}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Minha Conta">
+                            <i class="fas fa-user text-lg"></i>
+                        </a>
+                        <a href="{% url "catalog:cart" %}" class="text-zinc-400 hover:text-amber-500 transition-colors relative flex items-center" id="cartBtn" title="Meu Carrinho">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                            {% if cart.total_quantity %}
+                            <span id="cartCount" class="absolute -top-2 -right-2.5 bg-amber-500 text-zinc-950 text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center shadow-[0_0_8px_rgba(245,158,11,0.6)]">
+                                {{ cart.total_quantity|default:"0" }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:login' %}?next={{ request.path }}" class="text-zinc-400 hover:text-amber-500 transition-colors hidden md:block" title="Fazer Login">
+                            <i class="fas fa-sign-in-alt text-lg"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <div class="mb-6">
+            <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </a>
+        </div>
+
+        <article class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden relative">
+            <!-- Decorative header line -->
+            <div class="h-1 w-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600"></div>
+            
+            <div class="p-6 sm:p-10">
+                <header class="mb-8 border-b border-zinc-800/50 pb-6">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">
+                        {% if document %}
+                            {{ document.title }}
+                        {% else %}
+                            Termos de Uso e Políticas de Privacidade
+                        {% endif %}
+                    </h1>
+                    
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-zinc-400">
+                        {% if document %}
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-tag text-zinc-500"></i> Versão {{ document.version }}
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar-alt text-zinc-500"></i> Atualizado em {{ document.updated_at|date:"d/m/Y" }}
+                            </span>
+                        {% else %}
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-calendar-alt text-zinc-500"></i> Última atualização: 13/09/2026
+                            </span>
+                        {% endif %}
+                    </div>
+                </header>
+
+                <div class="prose-custom max-w-none">
+                    {% if document %}
+                        {{ document.content|safe }}
+                    {% else %}
+                        <p class="text-zinc-400 italic">O conteúdo do documento será exibido aqui. Por favor, adicione um documento ativo no painel administrativo.</p>
+                        
+                        <!-- Exemplo de conteúdo estático para design preview caso não haja documento no contexto -->
+                        <h2>1. Introdução</h2>
+                        <p>Bem-vindo à JP Acessórios. Ao acessar e utilizar nossa plataforma, você concorda com estes Termos de Uso e nossa Política de Privacidade. Recomendamos a leitura cuidadosa dos itens a seguir.</p>
+                        
+                        <h2>2. Coleta de Dados</h2>
+                        <p>A JP Acessórios coleta dados essenciais para o funcionamento de suas atividades, que incluem, mas não se limitam a:</p>
+                        <ul>
+                            <li>Informações de cadastro (Nome, e-mail, telefone).</li>
+                            <li>Endereço para entrega de produtos.</li>
+                            <li>Histórico de pedidos e preferências de navegação no catálogo.</li>
+                        </ul>
+                        
+                        <h2>3. Uso das Informações</h2>
+                        <p>As informações coletadas são utilizadas exclusivamente para:</p>
+                        <ul>
+                            <li>Processamento de pagamentos e envio de pedidos.</li>
+                            <li>Comunicação de atualizações sobre compras e ofertas relevantes.</li>
+                            <li>Melhoria contínua da experiência do usuário em nosso sistema.</li>
+                        </ul>
+                        
+                        <h2>4. Direitos do Usuário</h2>
+                        <p>Você tem o direito de solicitar o acesso, a correção ou a exclusão dos seus dados pessoais armazenados em nosso sistema a qualquer momento, conforme estabelecido pela Lei Geral de Proteção de Dados (LGPD). Para exercer esses direitos, entre em contato através de nossos canais de atendimento.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Formulário de Aceite (opcional, pode ser adaptado via view/contexto) -->
+                {% if request.user.is_authenticated and not user_has_signed %}
+                    <div class="mt-10 p-5 bg-zinc-950/50 border border-amber-500/30 rounded-xl">
+                        <form method="POST" action="{% url 'documents:sign_document' document.id %}" class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            {% csrf_token %}
+                            <div class="flex items-start gap-3">
+                                <div class="flex items-center h-5 mt-1">
+                                    <input id="accept_terms" name="accept_terms" type="checkbox" required class="w-4 h-4 text-amber-500 bg-zinc-900 border-zinc-700 rounded focus:ring-amber-500 focus:ring-2 focus:ring-offset-zinc-950">
+                                </div>
+                                <label for="accept_terms" class="text-sm text-zinc-300">
+                                    Eu li e concordo com os Termos de Uso e Políticas de Privacidade.
+                                </label>
+                            </div>
+                            <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-zinc-900 whitespace-nowrap">
+                                Aceitar Termos
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="bg-zinc-900 border-t border-zinc-800 mt-auto relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xl font-serif font-bold tracking-wider flex items-center group">
+                    <img src="https://api.iconify.design/game-icons/eagle-head.svg?color=%23f59e0b" class="w-6 h-6 mr-2 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" alt="Logo Águia">
+                    <span class="text-amber-500">JP</span><span class="text-white text-base ml-1">Acessórios</span>
+                </div>
+                <div class="text-center text-xs text-zinc-500 uppercase tracking-widest">
+                    <p>&copy; {% now "Y" %} JP Acessórios. Todos os direitos reservados.</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="https://wa.me/5577981401970" class="h-8 w-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-green-400 hover:text-amber-500 hover:border-amber-500/50 transition-all" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
